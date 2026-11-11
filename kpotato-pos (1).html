@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>K-Potato POS — Layout 3 Compact Admin Panel</title>
+<style>
+.app-logo{width:32px;height:32px;object-fit:contain;border-radius:8px;background:#292e37;padding:2px}.compact-brand .app-logo{width:34px;height:34px}.compact-brand .brand-icon[hidden],.app-logo[hidden]{display:none!important}
+:root{--brown:#55351f;--yellow:#ffc928;--cream:#fff8e8;--green:#dcebd2;--ink:#2e251d;--muted:#75695e;--line:#eadfcd;--red:#b33b2e}
+*{box-sizing:border-box}body{margin:0;background:#fbf7ef;color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{background:var(--brown);color:white;padding:18px 22px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.brand{font-size:1.35rem;font-weight:850;letter-spacing:.2px}.brand span{color:var(--yellow)}header small{display:block;color:#f5e8d8;font-weight:400}
+nav{display:flex;gap:7px;flex-wrap:wrap;padding:12px 16px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:3}
+button,.btn{border:0;border-radius:10px;padding:10px 13px;background:var(--brown);color:white;font-weight:700;cursor:pointer}button:hover{filter:brightness(1.08)}button:disabled{opacity:.45;cursor:not-allowed}
+nav button{background:#f3eadb;color:var(--brown)}nav button.active{background:var(--yellow)}
+main{max-width:1400px;margin:auto;padding:18px}.page{display:none}.page.active{display:block}
+h1{font-size:1.5rem;margin:0 0 14px}h2{font-size:1.1rem;margin:0 0 12px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:18px}
+.card,.panel{background:white;border:1px solid var(--line);border-radius:15px;padding:16px;box-shadow:0 2px 8px #4c30100a}
+.kpi{font-size:1.55rem;font-weight:850;margin-top:5px}.muted{color:var(--muted);font-size:.88rem}.layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(300px,.7fr);gap:15px}
+input,select,textarea{width:100%;border:1px solid #d9cbb7;border-radius:9px;padding:10px;background:white;color:var(--ink);font:inherit}
+label{display:block;font-size:.85rem;font-weight:700;margin:9px 0 5px}.formgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:10px;margin-top:12px}
+.product{border:1px solid var(--line);border-radius:13px;background:#fffdf8;padding:13px;text-align:left;color:var(--ink);min-height:100px}
+.product strong{display:block;margin-bottom:8px}.product .price{font-weight:850;color:#76501d}.product small{color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:.9rem}th,td{padding:9px 7px;border-bottom:1px solid #eee4d5;text-align:left;vertical-align:top}th{font-size:.8rem;color:var(--muted)}td input,td select{min-width:75px;padding:6px}
+.tablewrap{overflow:auto}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.row .fit{flex:0 0 auto}.right{text-align:right}.danger{background:var(--red)}.soft{background:#f3eadb;color:var(--brown)}.yellow{background:var(--yellow);color:var(--brown)}
+.notice{padding:11px 13px;border-radius:10px;background:#fff4cd;margin:10px 0}.success{background:#e4f3df}.hidden{display:none!important}.dash-lock{position:fixed;inset:0;z-index:9999;background:rgba(43,30,18,.58);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:18px}.dash-lock-card{width:min(420px,100%);background:#fffaf0;border-radius:18px;padding:24px;box-shadow:0 18px 60px #0005}.dash-lock-card h2{margin-top:0}.qtybtn{padding:3px 8px;border-radius:7px}.pill{display:inline-block;border-radius:20px;padding:3px 8px;background:#f3eadb;font-size:.78rem}.low{color:var(--red);font-weight:800}.sectiongap{margin-top:16px}.empty{padding:20px;text-align:center;color:var(--muted)}
+footer{padding:25px;text-align:center;color:var(--muted);font-size:.8rem}
+@media(max-width:760px){main{padding:12px}.layout{grid-template-columns:1fr}.kpi{font-size:1.3rem}nav{position:static}header{padding:15px}}
+@media print{header,nav,.noprint,button{display:none!important}body{background:white}.page{display:none!important}#history.page.active{display:block!important}main{padding:0}.panel,.card{box-shadow:none}}
+
+/* K-Potato dark sidebar redesign */
+:root{--brown:#17191d;--yellow:#ffd43b;--cream:#202329;--green:#26352e;--ink:#f3f4f6;--muted:#a4aab5;--line:#353a43;--red:#ff6b6b}
+html{min-height:100%;background:#111318}body{min-height:100vh;background:#111318;color:var(--ink)}
+.app-shell{min-height:100vh;display:flex;align-items:stretch}
+.sidebar{width:252px;flex:0 0 252px;background:#191b20;border-right:1px solid #30343c;display:flex;flex-direction:column;padding:22px 14px;position:sticky;top:0;height:100vh;overflow-y:auto;z-index:20}
+.side-brand{display:flex;flex-wrap:wrap;align-items:center;column-gap:9px;font-size:1.22rem;font-weight:900;color:#fff;padding:3px 10px 22px;border-bottom:1px solid #30343c}
+.side-brand strong{letter-spacing:.2px}.side-brand small{display:block;width:100%;padding-left:37px;margin-top:-3px;color:#9ca3af;font-size:.66rem;letter-spacing:1.5px;font-weight:700}
+.side-label{color:#777f8d;font-size:.68rem;font-weight:800;letter-spacing:1.5px;padding:22px 12px 9px}
+nav{position:static;display:flex;flex-direction:column;gap:5px;padding:0;background:transparent;border:0;flex:1}
+nav button{width:100%;text-align:left;display:flex;align-items:center;gap:11px;background:transparent;color:#b7bdc8;padding:12px 13px;border-radius:10px;font-weight:650;border:1px solid transparent;transition:background .15s,color .15s}
+nav button:hover{background:#262a32;color:#fff;filter:none}nav button.active{background:#ffd43b;color:#24211a;font-weight:850;box-shadow:0 5px 16px #ffd43b18}
+.sidebar-foot{margin-top:20px;padding:13px 12px;border-top:1px solid #30343c;color:#8f96a3;font-size:.75rem;line-height:1.6}
+.workspace{min-width:0;flex:1;display:flex;flex-direction:column}
+header{background:#191b20;color:#f9fafb;padding:19px 28px;border-bottom:1px solid #30343c;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.brand{font-size:1.15rem;font-weight:850;letter-spacing:.2px}.brand span{color:var(--yellow)}header small{display:block;color:#a4aab5;font-weight:400}
+main{width:100%;max-width:1600px;margin:0 auto;padding:26px 28px;flex:1}
+h1{font-size:1.55rem;margin:0 0 18px;letter-spacing:-.3px}h2{font-size:1.08rem;margin:0 0 12px;color:#f3f4f6}
+.card,.panel{background:#1b1e24;border:1px solid #343943;border-radius:15px;padding:17px;box-shadow:0 8px 22px #00000014}
+.muted{color:#a4aab5}.kpi{color:#fff;font-size:1.65rem}.cards{gap:14px;margin-bottom:20px}
+input,select,textarea{border:1px solid #424854;border-radius:9px;padding:10px;background:#14161b;color:#f3f4f6;font:inherit;color-scheme:dark}
+input::placeholder,textarea::placeholder{color:#7d8491}input:focus,select:focus,textarea:focus{outline:2px solid #ffd43b55;border-color:#ffd43b}
+label{color:#c5cad3}.product{border:1px solid #353a43;background:#22262d;color:#f3f4f6;min-height:108px}.product:hover{border-color:#ffd43b;background:#282c34;filter:none}.product .price{color:#ffd43b}.product small{color:#a4aab5}
+table{color:#e5e7eb}th,td{border-bottom:1px solid #343943}th{color:#a4aab5}tr:hover td{background:#ffffff04}
+button,.btn{background:#343943;color:#f3f4f6;border-radius:9px}button:hover{filter:brightness(1.12)}button:disabled{opacity:.45}.yellow{background:#ffd43b;color:#211f19}.soft{background:#2b3038;color:#d9dee7}.danger{background:#9f343b;color:white}
+.notice{background:#3b321b;color:#fce9a5;border:1px solid #68551f}.success{background:#1f3a2b;color:#a8edc0}.pill{background:#303640;color:#e0e5ee}.low{color:#ff7777}.empty{color:#a4aab5}.sectiongap{margin-top:18px}
+footer{padding:18px 28px;text-align:left;color:#777f8d;font-size:.78rem;border-top:1px solid #282c33}
+.dash-lock{background:rgba(5,7,10,.72);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}.dash-lock-card{background:#1d2026;color:#f3f4f6;border:1px solid #414650}.dash-lock-card h2{color:#fff}
+@media(max-width:850px){.app-shell{display:block}.sidebar{width:100%;height:auto;position:relative;padding:12px 12px 10px;border-right:0;border-bottom:1px solid #30343c}.side-brand{padding:4px 8px 12px}.side-brand small{padding-left:36px}.side-label{padding:12px 8px 7px}nav{flex-direction:row;overflow-x:auto;gap:6px;padding-bottom:3px}nav button{width:auto;flex:0 0 auto;white-space:nowrap;padding:10px 12px}.sidebar-foot{display:none}header{padding:15px 18px}main{padding:18px}.layout{grid-template-columns:1fr}}
+@media(max-width:520px){main{padding:13px}.cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.card,.panel{padding:13px}.kpi{font-size:1.28rem}header{padding:13px 15px}.brand{font-size:1rem}.formgrid{grid-template-columns:1fr}.products{grid-template-columns:repeat(2,minmax(0,1fr))}.product{padding:10px}}
+@media print{.sidebar,header,nav,.noprint,button{display:none!important}body,.workspace{background:white!important;color:#111!important}.app-shell{display:block}.page{display:none!important}#history.page.active{display:block!important}main{padding:0}.panel,.card{background:white!important;color:#111!important;box-shadow:none;border:0}.muted,th{color:#555!important}td,th{border-bottom:1px solid #ddd;color:#111!important}}
+
+
+/* Layout B: dark horizontal top navigation */
+.app-shell{min-height:100vh;display:block;background:#111318}
+.workspace{min-width:0;min-height:100vh;display:flex;flex-direction:column}
+.top-header{background:#191b20;color:#f9fafb;padding:17px clamp(16px,3vw,34px);border-bottom:1px solid #30343c;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.header-right{display:flex;align-items:center;justify-content:flex-end;gap:16px;flex-wrap:wrap}
+.header-status{font-size:.68rem;letter-spacing:1.4px;font-weight:850;color:#ffd43b;background:#2b2f37;border:1px solid #414650;border-radius:999px;padding:6px 10px}
+.top-nav{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:7px;flex-wrap:nowrap;overflow-x:auto;padding:11px clamp(12px,2.5vw,30px);background:#191b20;border-bottom:1px solid #30343c;scrollbar-width:thin;scrollbar-color:#414650 #191b20}
+.top-nav button{width:auto;flex:0 0 auto;white-space:nowrap;text-align:center;display:inline-flex;align-items:center;gap:7px;background:transparent;color:#b7bdc8;padding:10px 13px;border-radius:9px;font-size:.88rem;font-weight:700;border:1px solid transparent;transition:background .15s,color .15s}
+.top-nav button:hover{background:#262a32;color:#fff;filter:none}
+.top-nav button.active{background:#ffd43b;color:#24211a;font-weight:850;box-shadow:0 4px 14px #ffd43b18}
+main{width:100%;max-width:1600px;margin:0 auto;padding:clamp(16px,2.5vw,30px);flex:1}
+@media(max-width:760px){.top-header{padding:14px 16px}.top-nav{padding:9px 12px}.top-nav button{padding:9px 11px;font-size:.82rem}.header-right{gap:8px}}
+@media print{.top-nav,.top-header,.noprint,button{display:none!important}.app-shell,.workspace{display:block;background:white!important;color:#111!important}}
+
+
+
+/* Layout 2: fast checkout workstation */
+:root{--checkout-yellow:#ffd43b;--checkout-bg:#111318;--checkout-panel:#1b1e24;--checkout-line:#343943}
+#pos h1{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+#pos h1:after{content:'FAST CHECKOUT';font-size:.65rem;letter-spacing:1.5px;font-weight:850;color:#ffd43b;background:#2a2d34;border:1px solid #414650;border-radius:999px;padding:6px 10px}
+#pos .layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(345px,400px);gap:18px;align-items:start}
+#pos .layout>.panel:first-child{min-width:0;padding:20px}
+#pos .layout>.panel:last-child{position:sticky;top:14px;max-height:calc(100vh - 28px);overflow:auto;border-color:#4a432b;box-shadow:0 16px 40px #0003;background:linear-gradient(180deg,#202329 0%,#1a1d23 100%)}
+#pos .layout>.panel:last-child h2{display:flex;align-items:center;gap:9px;font-size:1.15rem}
+#pos .layout>.panel:last-child h2:before{content:'🛒';font-size:1.05rem}
+#pos .products{grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin-top:16px}
+#pos .product{position:relative;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;text-align:left;min-height:142px;padding:16px;border-radius:15px;background:#242830;border:1px solid #3a404b;transition:transform .12s,border-color .12s,background .12s}
+#pos .product:after{content:'＋ ADD';align-self:flex-end;margin-top:12px;font-size:.68rem;font-weight:900;letter-spacing:.8px;color:#24211a;background:#ffd43b;border-radius:7px;padding:5px 8px}
+#pos .product:hover{transform:translateY(-2px);border-color:#ffd43b;background:#2a2f38}
+#pos .product strong{font-size:1rem;line-height:1.3;margin-bottom:10px;overflow-wrap:anywhere}
+#pos .product .price{font-size:1.15rem;font-weight:900;color:#ffd43b}
+#pos .product small{margin-top:5px;font-size:.76rem}
+#pos .layout>.panel:first-child .row{align-items:end}
+#pos .layout>.panel:first-child .row>div{min-width:145px}
+#pos .layout>.panel:last-child #cart{overflow-x:auto}
+#pos .layout>.panel:last-child table{font-size:.86rem}
+#pos .layout>.panel:last-child th,#pos .layout>.panel:last-child td{padding:10px 5px}
+#pos .layout>.panel:last-child .qtybtn{min-width:29px;min-height:29px;padding:3px 7px}
+#pos #cartTotal{background:#15171c;border:1px solid #343943;border-radius:12px;padding:13px;margin-top:12px}
+#pos #cartTotal hr{border:0;border-top:1px solid #343943;margin:12px 0}
+#pos .layout>.panel:last-child label{margin-top:13px}
+#pos .layout>.panel:last-child #payment,#pos .layout>.panel:last-child #paid,#pos .layout>.panel:last-child #discount{min-height:43px}
+#pos .layout>.panel:last-child button.yellow[onclick="checkout()"]{min-height:50px;font-size:1rem;font-weight:900;letter-spacing:.1px;box-shadow:0 7px 18px #ffd43b1c}
+#pos .layout>.panel:last-child>p{line-height:1.5}
+@media(max-width:1050px){#pos .layout{grid-template-columns:minmax(0,1fr) minmax(310px,360px)}#pos .products{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}}
+@media(max-width:820px){#pos .layout{grid-template-columns:1fr}#pos .layout>.panel:last-child{position:sticky;top:8px;z-index:5;max-height:none;overflow:visible;box-shadow:0 -8px 30px #0003}#pos .products{grid-template-columns:repeat(auto-fill,minmax(155px,1fr))}}
+@media(max-width:520px){#pos h1{font-size:1.3rem;flex-wrap:wrap}#pos .layout>.panel:first-child{padding:13px}#pos .products{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}#pos .product{min-height:128px;padding:11px}#pos .product strong{font-size:.9rem}#pos .product .price{font-size:1.05rem}#pos .layout>.panel:last-child{padding:13px}#pos .layout>.panel:last-child #cart{max-height:190px;overflow:auto}}
+
+
+/* Layout 4: tablet-friendly touch POS with menu photography */
+:root{--touch:#ffd43b}
+button,.btn, input,select{min-height:44px}
+.top-nav button{min-height:46px;padding:12px 15px;font-size:.9rem}
+#pos .layout{grid-template-columns:minmax(0,1fr) minmax(320px,390px);gap:18px;align-items:start}
+#pos .layout>.panel:first-child{padding:20px}
+#pos .layout>.panel:last-child{position:sticky;top:78px;max-height:calc(100vh - 100px);overflow:auto;border-color:#424854;box-shadow:0 14px 34px #0004}
+#pos .products{grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:14px}
+#pos .product{padding:0;min-height:0;overflow:hidden;border-radius:17px;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;text-align:left;background:#20242b;border:1px solid #383e49;transition:transform .14s,border-color .14s;}
+#pos .product:hover{transform:translateY(-2px);border-color:#ffd43b;background:#252a32}
+.product-photo{height:118px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(circle at 30% 20%,#444b58,#20242b 70%);border-bottom:1px solid #383e49}
+.product-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.product-photo .photo-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:3.2rem;background:linear-gradient(135deg,#303640,#1d2026)}
+.product-photo img:not([src=""])+.photo-fallback{display:none}
+.product-copy{padding:12px 13px 13px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;flex:1}
+#pos .product strong{font-size:.98rem;line-height:1.25;margin:0;min-height:2.45em;overflow-wrap:anywhere}
+#pos .product .price{font-size:1.2rem;font-weight:950;color:#ffd43b}
+#pos .product small{font-size:.75rem;color:#a4aab5}
+#pos .product:after{content:'＋ ADD ITEM';align-self:stretch;text-align:center;margin:7px 12px 12px;background:#ffd43b;color:#211f19;border-radius:9px;padding:10px 8px;font-size:.76rem;font-weight:950;letter-spacing:.6px}
+#pos .layout>.panel:last-child h2{font-size:1.18rem}
+#pos .layout>.panel:last-child #cart{overflow:auto}
+#pos .layout>.panel:last-child .yellow[onclick="checkout()"]{min-height:56px;font-size:1.02rem}
+@media(max-width:1050px){#pos .layout{grid-template-columns:minmax(0,1fr) minmax(300px,350px)}#pos .products{grid-template-columns:repeat(auto-fill,minmax(155px,1fr))} .product-photo{height:104px}}
+@media(max-width:820px){main{padding:15px}.top-nav{gap:8px}#pos .layout{grid-template-columns:1fr}#pos .layout>.panel:last-child{position:sticky;top:4px;z-index:8;max-height:48vh;overflow:auto;box-shadow:0 -7px 28px #0005;border-color:#555b66}#pos .products{grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}#pos .product{min-height:0}.product-photo{height:105px}}
+@media(max-width:600px){#pos .products{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}#pos .product-copy{padding:10px}#pos .product strong{font-size:.9rem;min-height:2.5em}#pos .product .price{font-size:1.1rem}.product-photo{height:100px}#pos .layout>.panel:last-child{max-height:50vh}#pos .layout>.panel:last-child #cart{max-height:145px}}
+@media(min-width:821px){#pos .layout>.panel:last-child #cart{max-height:35vh}}
+
+
+/* Layout 3: Compact Admin Panel */
+.layout3-shell{display:flex!important;min-height:100vh;background:#111318;align-items:stretch}
+.compact-sidebar{width:218px;flex:0 0 218px;position:sticky;top:0;height:100vh;overflow-y:auto;background:#191b20;border-right:1px solid #30343c;padding:15px 11px;display:flex;flex-direction:column;z-index:40}
+.compact-brand{display:flex;align-items:center;gap:9px;padding:6px 8px 18px;border-bottom:1px solid #30343c;color:#f9fafb}
+.compact-brand .brand-icon{font-size:1.7rem}.compact-brand strong{font-size:1rem;letter-spacing:-.2px;white-space:nowrap}.compact-brand em{font-style:normal;color:#ffd43b}.compact-brand small{display:block;color:#858d9b;font-size:.62rem;letter-spacing:1.7px;font-weight:850;margin-top:3px}
+.compact-section-label{padding:17px 10px 7px;color:#737b89;font-size:.64rem;letter-spacing:1.5px;font-weight:900}
+.compact-nav{display:flex;flex-direction:column;gap:3px;flex:1;padding:0;background:transparent;border:0;overflow:visible;position:static}
+.compact-nav button{width:100%;min-height:39px;flex:0 0 auto;display:flex;align-items:center;justify-content:flex-start;gap:10px;padding:9px 10px;border-radius:8px;background:transparent;color:#b7bdc8;text-align:left;font-size:.82rem;font-weight:700;border:1px solid transparent;white-space:normal}
+.compact-nav button span:first-child{width:20px;text-align:center;font-size:.95rem}.compact-nav button:hover{background:#262a32;color:#fff}.compact-nav button.active{background:#ffd43b;color:#211f19;box-shadow:0 3px 10px #ffd43b12}
+.compact-sidebar-foot{margin-top:15px;padding:12px 8px 3px;border-top:1px solid #30343c;color:#8f96a3;font-size:.68rem;line-height:1.5}.status-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#51d38a;margin-right:6px}
+.layout3-shell .workspace{min-width:0;flex:1}.layout3-shell .top-header{padding:13px 22px;min-height:62px}.layout3-shell .brand{font-size:1rem}.layout3-shell .brand small{font-size:.75rem}.layout3-shell main{max-width:none;padding:18px 22px}.layout3-shell h1{font-size:1.35rem;margin-bottom:13px}.layout3-shell h2{font-size:1rem}.layout3-shell .card,.layout3-shell .panel{padding:13px;border-radius:11px}.layout3-shell .cards{gap:10px;margin-bottom:14px}.layout3-shell .kpi{font-size:1.4rem}.layout3-shell .sectiongap{margin-top:12px}
+.layout3-shell #pos .layout{grid-template-columns:minmax(0,1fr) minmax(285px,330px);gap:12px;align-items:start}.layout3-shell #pos .layout>.panel:first-child{padding:13px}.layout3-shell #pos .layout>.panel:last-child{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto;box-shadow:0 8px 22px #0003}.layout3-shell #pos .products{grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:9px}.layout3-shell #pos .product{border-radius:11px}.layout3-shell .product-photo{height:82px}.layout3-shell #pos .product-copy{padding:9px 10px}.layout3-shell #pos .product strong{font-size:.86rem;min-height:2.3em}.layout3-shell #pos .product .price{font-size:1.05rem}.layout3-shell #pos .product:after{margin:4px 9px 9px;padding:7px 5px;font-size:.68rem}.layout3-shell input,.layout3-shell select,.layout3-shell textarea{padding:8px;min-height:37px;font-size:.88rem}.layout3-shell button{padding:8px 10px}.layout3-shell label{margin:7px 0 4px;font-size:.8rem}.layout3-shell th,.layout3-shell td{padding:7px 6px}.layout3-shell .formgrid{gap:7px}
+@media(max-width:980px){.compact-sidebar{width:190px;flex-basis:190px}.layout3-shell main{padding:15px}.layout3-shell #pos .layout{grid-template-columns:minmax(0,1fr) 290px}.layout3-shell #pos .products{grid-template-columns:repeat(auto-fill,minmax(125px,1fr))}}
+@media(max-width:760px){.layout3-shell{display:block!important}.compact-sidebar{width:100%;height:auto;position:relative;padding:9px 10px 8px;border-right:0;border-bottom:1px solid #30343c;overflow:visible}.compact-brand{padding:2px 5px 9px}.compact-section-label{display:none}.compact-sidebar-foot{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px;padding:8px 4px 2px;border-top:1px solid #30343c}.compact-sidebar-foot #sidebarUserInfo{flex:1;min-width:120px;margin-bottom:0!important}.compact-sidebar-foot button{width:auto!important;margin-bottom:0!important;flex:0 0 auto}.compact-nav{flex-direction:row;overflow-x:auto;gap:5px;padding-top:8px;scrollbar-width:thin}.compact-nav button{width:auto;min-width:max-content;min-height:36px;padding:8px 10px}.compact-nav button span:first-child{width:auto}.layout3-shell .top-header{padding:11px 14px}.layout3-shell main{padding:12px}.layout3-shell #pos .layout{grid-template-columns:1fr}.layout3-shell #pos .layout>.panel:last-child{position:relative;top:auto;max-height:none;overflow:visible}.layout3-shell #pos .products{grid-template-columns:repeat(3,minmax(0,1fr))}.layout3-shell .product-photo{height:78px}}
+@media(max-width:520px){.layout3-shell .header-status{display:none}.layout3-shell .top-header{gap:7px}.layout3-shell .brand{font-size:.9rem}.layout3-shell .brand small{font-size:.68rem}.layout3-shell #pos .products{grid-template-columns:repeat(2,minmax(0,1fr))}.layout3-shell .product-photo{height:90px}.layout3-shell #pos .layout>.panel:last-child{padding:12px}.layout3-shell .cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media print{.compact-sidebar{display:none!important}.layout3-shell{display:block!important}.layout3-shell .workspace{display:block}.layout3-shell main{padding:0}}
+
+/* Login screen */
+.login-overlay{position:fixed;inset:0;z-index:10000;background:linear-gradient(145deg,#0f1115 0%,#1a1d24 50%,#14171c 100%);display:flex;align-items:center;justify-content:center;padding:18px}
+.login-overlay.hidden{display:none!important}
+.login-card{width:min(400px,100%);background:#1d2026;border:1px solid #414650;border-radius:18px;padding:28px 26px;box-shadow:0 22px 60px #0008}
+.login-card h1{margin:0 0 6px;font-size:1.4rem;color:#fff}.login-card .login-sub{margin:0 0 20px;color:#a4aab5;font-size:.88rem}
+.login-card label{margin-top:12px}.login-card input{min-height:44px}
+.login-error{color:#ff7777;font-size:.85rem;min-height:1.2em;margin:10px 0 0}
+.login-accounts{margin-top:18px;padding-top:14px;border-top:1px solid #343943;font-size:.78rem;color:#8f96a3;line-height:1.55}
+.login-accounts code{background:#2b3038;padding:1px 6px;border-radius:5px;color:#ffd43b;font-size:.76rem}
+.user-chip{display:inline-flex;align-items:center;gap:8px;background:#2b2f37;border:1px solid #414650;border-radius:999px;padding:5px 10px 5px 8px;font-size:.78rem;color:#d9dee7}
+.user-chip .role-badge{background:#ffd43b;color:#211f19;font-weight:850;font-size:.65rem;letter-spacing:.6px;padding:2px 7px;border-radius:999px;text-transform:uppercase}
+.nav-admin-only.hidden-by-role,.page.hidden-by-role{display:none!important}
+.account-card{border:1px solid #343943;border-radius:12px;padding:14px;margin-bottom:12px;background:#202329}
+.account-card-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.account-card .formgrid{margin-top:4px}
+.account-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.account-add-box{border:1px dashed #4a5160;border-radius:12px;padding:14px;margin-top:14px;background:#1a1d23}
+@media(max-width:560px){.account-actions button{flex:1 1 auto}}
+
+/* Upgraded dashboard */
+.dash-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px}.dash-heading h1{margin:3px 0 4px}.dash-heading p{margin:0}.dash-eyebrow{font-size:.67rem;letter-spacing:1.8px;color:#ffd43b;font-weight:900}.dash-controls{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap}.dash-controls label{margin:0 0 4px}.dash-controls select{min-width:145px}.dash-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.dash-kpis .card{position:relative;overflow:hidden;min-height:105px}.dash-kpis .card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:#ffd43b}.dash-kpis .kpi{font-size:1.5rem;letter-spacing:-.4px;overflow-wrap:anywhere}.dash-grid-main{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,.8fr);gap:12px}.dash-grid-bottom{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}.dash-panel-heading{display:flex;align-items:center;justify-content:space-between;gap:10px}.sales-trend{height:220px;display:flex;align-items:stretch;gap:8px;padding:20px 3px 0;overflow-x:auto}.trend-col{min-width:25px;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:7px}.trend-value{font-size:.66rem;color:#cbd0d9;white-space:nowrap;writing-mode:vertical-rl;transform:rotate(180deg);max-height:55px;overflow:hidden}.trend-track{height:125px;width:min(28px,100%);display:flex;align-items:flex-end;background:#282c34;border-radius:7px 7px 3px 3px;overflow:hidden}.trend-bar{width:100%;background:linear-gradient(180deg,#ffe36b,#ffc928);border-radius:6px 6px 2px 2px;min-height:2px}.trend-label{font-size:.67rem;color:#a4aab5;white-space:nowrap}.dash-metric-row{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid #343943}.dash-metric-row:last-child{border-bottom:0}.dash-meter{height:6px;border-radius:99px;background:#30343d;overflow:hidden;margin-top:6px}.dash-meter span{display:block;height:100%;background:#ffd43b;border-radius:99px}.dash-item{padding:9px 0;border-bottom:1px solid #343943}.dash-item:last-child{border-bottom:0}.dash-item-top{display:flex;justify-content:space-between;gap:8px}.dash-rank{display:inline-grid;place-items:center;width:23px;height:23px;border-radius:7px;background:#30343d;color:#ffd43b;font-weight:900;font-size:.75rem;margin-right:7px}.inventory-snapshot{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.inventory-stat{padding:12px;border:1px solid #343943;background:#202329;border-radius:10px}.inventory-stat strong{display:block;font-size:1.1rem;margin-top:4px}.dash-empty{padding:18px 8px;color:#a4aab5;text-align:center;font-size:.86rem}
+@media(max-width:1050px){.dash-grid-bottom{grid-template-columns:repeat(2,minmax(0,1fr))}.dash-grid-bottom>.panel:last-child{grid-column:1/-1}}
+@media(max-width:760px){.dash-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.dash-grid-main,.dash-grid-bottom{grid-template-columns:1fr}.dash-grid-bottom>.panel:last-child{grid-column:auto}.inventory-snapshot{grid-template-columns:repeat(2,minmax(0,1fr))}.sales-trend{height:200px}}
+@media(max-width:420px){.dash-kpis{grid-template-columns:1fr 1fr}.dash-kpis .kpi{font-size:1.15rem}.dash-controls{width:100%}.dash-controls label{width:100%}.dash-controls select{flex:1}.inventory-snapshot{grid-template-columns:1fr 1fr}}
+
+</style>
+</head>
+<body>
+<div class="app-shell layout3-shell">
+<aside class="compact-sidebar">
+  <div class="compact-brand"><img id="appLogo" class="app-logo" alt="App logo" hidden><span id="appLogoFallback" class="brand-icon">🥔</span><div><strong id="appBrandName">K-Potato <em>POS</em></strong><small id="appBrandSubtitle">ADMIN PANEL</small></div></div>
+  <div class="compact-section-label">WORKSPACE</div>
+  <nav class="top-nav compact-nav" aria-label="Main navigation">
+    <button class="active" data-page="pos"><span>🛒</span><span>POS / Sales</span></button>
+    <button data-page="dashboard" class="nav-admin-only"><span>▦</span><span>Dashboard</span></button>
+    <button data-page="products" class="nav-admin-only"><span>🍟</span><span>Menu Items</span></button>
+    <button data-page="inventory" class="nav-admin-only"><span>📦</span><span>Inventory</span></button>
+    <button data-page="recipes" class="nav-admin-only"><span>🧾</span><span>Recipes</span></button>
+    <button data-page="history"><span>📊</span><span>Sales History</span></button>
+    <button data-page="stock" class="nav-admin-only"><span>↕</span><span>Stock In / Wastage</span></button>
+    <button data-page="backup" class="nav-admin-only"><span>⚙</span><span>Backup / Settings</span></button>
+  </nav>
+  <div class="compact-sidebar-foot">
+    <div id="sidebarUserInfo" style="margin-bottom:8px"></div>
+    <button type="button" class="soft" style="width:100%;margin-bottom:10px;font-size:.78rem;padding:8px 10px" onclick="logoutUser()">Log out</button>
+    <span class="status-dot"></span> Local data on this device
+  </div>
+</aside>
+<div class="workspace">
+<header class="top-header"><div class="brand"><span id="headerBrandName">K-Potato POS</span> <small id="headerBrandSubtitle">Sales • Menu • Inventory management</small></div><div class="header-right"><span id="headerUserChip" class="user-chip" style="display:none"></span><span class="header-status">LOCAL POS</span><div id="clock" class="muted"></div></div></header>
+<main>
+<section id="dashboard" class="page">
+<div class="dash-heading"><div><div class="dash-eyebrow">BUSINESS OVERVIEW</div><h1>Dashboard</h1><p class="muted">Track sales, estimated profit, popular items and stock alerts.</p></div><div class="dash-controls"><label for="dashRange">Reporting period</label><select id="dashRange" onchange="renderDashboard()"><option value="today">Today</option><option value="7" selected>Last 7 days</option><option value="30">Last 30 days</option><option value="month">This month</option><option value="year">This year</option><option value="all">All time</option></select><button class="soft" type="button" onclick="renderDashboard()">↻ Refresh</button></div></div>
+<div class="cards dash-kpis" id="kpis"></div>
+<div class="dash-grid-main"><div class="panel dash-chart-panel"><div class="dash-panel-heading"><div><h2>Sales trend</h2><div class="muted">Daily sales totals for the selected period</div></div><span class="pill">₱ PHP</span></div><div id="salesTrend" class="sales-trend"></div></div><div class="panel"><h2>Payment breakdown</h2><p class="muted">By payment method in selected period</p><div id="paymentBreakdown"></div></div></div>
+<div class="dash-grid-bottom"><div class="panel"><h2>Top-selling items</h2><p class="muted">Based on quantity sold in selected period</p><div id="topItems"></div></div><div class="panel"><h2>Low-stock alerts <span id="lowStockCount" class="pill"></span></h2><div id="lowstock"></div></div><div class="panel"><h2>Recent sales</h2><div id="recent"></div><button type="button" class="soft sectiongap" onclick="nav('history')">View sales history →</button></div></div>
+<div class="panel sectiongap"><h2>Inventory snapshot</h2><div id="inventorySnapshot" class="inventory-snapshot"></div></div>
+<div class="panel sectiongap"><h2>How automatic deduction works</h2><p class="muted">A completed sale uses the recipe quantities for every product and records one inventory movement per ingredient. Re-submitting the same receipt is blocked. Update sample recipes and stock quantities to match your actual shop before using this for real sales.</p></div>
+</section>
+<section id="pos" class="page active">
+<h1>POS / New Sale</h1><div class="layout"><div class="panel"><div class="row"><div><label>Search menu</label><input id="productSearch" placeholder="Search product..." oninput="renderProductsPOS()"></div><div><label>Category</label><select id="categoryFilter" onchange="renderProductsPOS()"><option value="">All categories</option></select></div></div><div class="products" id="posProducts"></div></div>
+<div class="panel"><h2>Current order</h2><div id="cart"></div><div class="formgrid"><div><label>Discount (₱)</label><input id="discount" type="number" min="0" value="0" oninput="renderCart()"></div><div><label>Payment method</label><select id="payment"><option>Cash</option><option>GCash</option><option>Card</option><option>Other</option></select></div></div><label>Amount paid (₱)</label><input id="paid" type="number" min="0" placeholder="Enter amount received"><div id="cartTotal" class="sectiongap"></div><button class="yellow" style="width:100%;margin-top:12px" onclick="checkout()">Complete Sale & Deduct Stock</button><p class="muted">Stock is deducted only when checkout succeeds. Ensure recipe quantities are correct.</p></div></div>
+</section>
+<section id="inventory" class="page">
+<h1>Ingredient & Packaging Inventory</h1><div class="panel"><h2>Add one ingredient / supply</h2><form id="ingredientForm" onsubmit="addIngredient(event)"><div class="formgrid"><div><label>Name</label><input id="ingName" required></div><div><label>Category</label><select id="ingCategory"><option>Ingredient</option><option>Packaging</option><option>Drink</option><option>Other</option></select></div><div><label>Base unit</label><select id="ingUnit"><option>g</option><option>ml</option><option>pcs</option></select></div><div><label>Opening stock (base units)</label><input id="ingStock" type="number" min="0" step="any" value="0" required></div><div><label>Cost per base unit (₱)</label><input id="ingCost" type="number" min="0" step="any" value="0" required></div><div><label>Reorder level (base units)</label><input id="ingReorder" type="number" min="0" step="any" value="0" required></div></div><button class="yellow" type="submit" style="margin-top:12px">Add Ingredient</button></form></div>
+<div class="panel sectiongap"><h2>Add multiple ingredients at once</h2><p class="muted">Add as many rows as needed, then save them together. Duplicate ingredient names are skipped.</p><div id="bulkIngredientRows"></div><div class="row sectiongap"><button class="soft fit" type="button" onclick="addBulkIngredientRow()">＋ Add another row</button><button class="yellow fit" type="button" onclick="saveBulkIngredients()">Save all ingredients</button></div></div>
+<div class="panel sectiongap"><div class="row"><h2>Current stock</h2><input id="inventorySearch" placeholder="Search inventory..." oninput="renderInventory()"></div><div class="tablewrap" id="inventoryTable"></div></div>
+</section>
+<section id="recipes" class="page">
+<h1>Recipe Breakdown</h1><div class="panel"><p class="muted">Add every ingredient used for ONE serving of a menu item, such as flour, breading, egg wash, seasoning, and oil. Use each ingredient's base unit (g, ml or pcs). You can add multiple ingredients in one save.</p><div><label>Product</label><select id="recipeProduct"></select></div><div id="recipeEntryRows" class="sectiongap"></div><div class="row sectiongap"><button class="soft fit" type="button" onclick="addRecipeEntryRow()">＋ Add ingredient row</button><button class="yellow fit" type="button" onclick="saveRecipeRows()">Save all recipe ingredients</button></div><p class="muted sectiongap">If an ingredient is already in this product's recipe, its quantity will be updated. Different ingredients (for example flour and breading) will be saved as separate recipe lines.</p></div><div class="panel sectiongap"><h2>Recipes</h2><div class="tablewrap" id="recipeTable"></div></div>
+</section>
+<section id="products" class="page">
+<h1>Menu Items</h1><div class="panel"><h2>Add menu item</h2><form id="productForm" onsubmit="addProduct(event)"><div class="formgrid"><div><label>Product name</label><input id="prodName" required></div><div><label>Category</label><input id="prodCategory" value="Fries" required></div><div><label>Selling price (₱)</label><input id="prodPrice" type="number" min="0" step=".01" required></div><div><label>Menu item picture (optional)</label><input id="prodImage" type="file" accept="image/*"><small class="muted">Choose a photo from your device. It will be saved with this menu item.</small></div></div><button class="yellow" type="submit" style="margin-top:12px">Add Product</button></form></div><div class="panel sectiongap"><div class="tablewrap" id="productTable"></div></div>
+</section>
+<section id="history" class="page">
+<h1>Sales History</h1>
+<div class="panel noprint">
+  <div class="formgrid">
+    <div><label>Search receipt or item</label><input id="historySearch" placeholder="Search receipt, item, or payment..." oninput="renderHistory()"></div>
+    <div><label>From date</label><input id="historyFrom" type="date" onchange="renderHistory()"></div>
+    <div><label>To date</label><input id="historyTo" type="date" onchange="renderHistory()"></div>
+    <div><label>Payment method</label><select id="historyPayment" onchange="renderHistory()"><option value="">All payments</option><option>Cash</option><option>GCash</option><option>Card</option><option>Other</option></select></div>
+  </div>
+  <div class="row sectiongap"><button class="soft fit" onclick="clearHistoryFilters()">Clear filters</button><button class="soft fit" onclick="renderHistory()">Refresh</button><button class="soft fit" onclick="window.print()">Print this report</button></div>
+</div>
+<div class="panel sectiongap"><div id="historySummary" class="muted"></div><div class="tablewrap" id="historyTable"></div></div>
+</section>
+<section id="stock" class="page">
+<h1>Stock In / Wastage / Adjustments</h1><div class="panel"><p class="muted">Record stock in for purchases received. Quantity must use the ingredient's base unit. Wastage and stock-out adjustments reduce inventory.</p><form onsubmit="stockMovement(event)"><div class="formgrid"><div><label>Ingredient</label><select id="movementIngredient"></select></div><div><label>Movement type</label><select id="movementType"><option value="purchase">Stock In / Purchase</option><option value="wastage">Wastage</option><option value="adjustment_in">Positive Adjustment</option><option value="adjustment_out">Negative Adjustment</option></select></div><div><label>Quantity</label><input id="movementQty" type="number" min=".001" step="any" required></div><div><label>Unit cost (₱ per base unit, optional)</label><input id="movementCost" type="number" min="0" step="any" value="0"></div><div><label>Reason / reference</label><input id="movementReason" placeholder="Supplier, spoilage, stock count..."></div></div><button class="yellow" style="margin-top:12px">Save Stock Movement</button></form></div><div class="panel sectiongap"><h2>Recent stock movements</h2><div class="tablewrap" id="movementTable"></div></div>
+</section>
+<section id="backup" class="page">
+<h1>Backup / Settings</h1>
+<div class="panel"><h2>App name &amp; logo</h2><p class="muted">Personalize the name and picture shown in the sidebar and top header. Changes are saved in this browser and included in your JSON backup.</p>
+<form id="appBrandForm" onsubmit="saveAppBrand(event)"><div class="formgrid"><div><label for="appNameInput">App / business name</label><input id="appNameInput" maxlength="40" placeholder="e.g. K-Potato POS" required></div><div><label for="appSubtitleInput">Subtitle</label><input id="appSubtitleInput" maxlength="60" placeholder="e.g. Fries • Corndogs • Drinks"></div><div><label for="appLogoInput">App picture / logo</label><input id="appLogoInput" type="file" accept="image/*"><small class="muted">Choose JPG, PNG or WebP. It will be resized automatically.</small></div></div><div class="row sectiongap" style="align-items:center"><div class="fit"><img id="appLogoPreview" alt="Logo preview" style="width:72px;height:72px;object-fit:contain;border-radius:12px;background:#292e37;padding:5px;display:none"><span id="appLogoPreviewFallback" style="font-size:2.4rem">🥔</span></div><div class="fit"><button class="yellow" type="submit">Save App Branding</button><button class="soft" type="button" onclick="removeAppLogo()">Remove picture</button></div></div><div id="appBrandMessage" class="muted sectiongap" aria-live="polite"></div></form></div>
+<div class="panel sectiongap"><h2>User accounts (Admin only)</h2>
+<p class="muted">Add, rename, change password, or delete accounts. Employees can only use POS / Sales and Sales History. At least one admin account must remain.</p>
+<div id="accountsList"></div>
+<div id="accountsMessage" class="muted sectiongap" aria-live="polite"></div>
+<div class="account-add-box">
+  <h2 style="margin-bottom:8px">Add account</h2>
+  <form id="addAccountForm" onsubmit="adminAddAccount(event)">
+    <div class="formgrid">
+      <div><label>Display name</label><input id="newAcctDisplay" required maxlength="40" placeholder="e.g. Maria"></div>
+      <div><label>Username</label><input id="newAcctUsername" required maxlength="30" placeholder="letters, numbers, _" pattern="[A-Za-z0-9_]{3,30}" title="3–30 letters, numbers, or underscore"></div>
+      <div><label>Password</label><input id="newAcctPassword" type="password" required minlength="4" autocomplete="new-password" placeholder="Min. 4 characters"></div>
+      <div><label>Role</label><select id="newAcctRole"><option value="employee">Employee</option><option value="admin">Admin</option></select></div>
+    </div>
+    <button class="yellow" type="submit" style="margin-top:12px">Add account</button>
+  </form>
+</div>
+</div>
+<div class="panel sectiongap"><h2>Dashboard password</h2><p class="muted">Extra lock for the Dashboard screen. Default password: <strong>1234</strong>. Admin only.</p><form id="dashPasswordForm" onsubmit="changeDashboardPassword(event)"><div class="formgrid"><div><label>Current password</label><input id="currentDashPassword" type="password" required autocomplete="current-password"></div><div><label>New password</label><input id="newDashPassword" type="password" minlength="4" required autocomplete="new-password"></div><div><label>Confirm new password</label><input id="confirmDashPassword" type="password" minlength="4" required autocomplete="new-password"></div></div><button class="yellow" type="submit" style="margin-top:12px">Change Dashboard Password</button><div id="dashPasswordMessage" class="muted sectiongap"></div></form></div><div class="panel sectiongap"><h2>Data backup</h2><p>Data is saved in this browser on this device. Export a JSON backup regularly. This demo does not automatically sync to another device or cloud.</p><div class="row"><button onclick="exportData()">Download Backup</button><label class="fit soft" style="padding:10px 13px;border-radius:10px;cursor:pointer">Import Backup <input type="file" accept=".json,application/json" onchange="importData(event)" style="display:none"></label></div><div class="notice">Important: This standalone version stores data locally in your browser. For multiple devices, cloud sync, staff accounts, and stronger transaction locking, it needs a shared database/backend or an AppSheet setup.</div><h2 class="sectiongap">Sample data</h2><p class="muted">Initial menu and recipes are examples only. You can clear all app data and start fresh.</p><button class="danger" onclick="resetData()">Reset all local data</button></div>
+</section>
+</main><footer>K-Potato • POS &amp; Inventory • Verify recipe quantities and costs before operational use</footer></div></div>
+<div id="dashboardLock" class="dash-lock hidden" role="dialog" aria-modal="true" aria-labelledby="dashLockTitle">
+ <form class="dash-lock-card" onsubmit="unlockDashboard(event)">
+  <h2 id="dashLockTitle">🔒 Dashboard Locked</h2><p class="muted">Enter your password to open the Dashboard.</p>
+  <label for="dashLoginPassword">Password</label><input id="dashLoginPassword" type="password" required autocomplete="current-password" placeholder="Enter dashboard password">
+  <button class="yellow" type="submit" style="width:100%;margin-top:14px">Unlock Dashboard</button>
+  <button class="soft" type="button" onclick="closeDashboardLock()" style="width:100%;margin-top:8px">Close</button>
+  <p id="dashLoginError" class="low" aria-live="polite"></p>
+ </form>
+</div>
+<div id="loginOverlay" class="login-overlay" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+  <form class="login-card" onsubmit="loginUser(event)">
+    <h1 id="loginTitle">🥔 Sign in</h1>
+    <p class="login-sub">Choose an account to open K-Potato POS on this device.</p>
+    <label for="loginUsername">Username</label>
+    <input id="loginUsername" required autocomplete="username" placeholder="Username">
+    <label for="loginPassword">Password</label>
+    <input id="loginPassword" type="password" required autocomplete="current-password" placeholder="Enter password">
+    <button class="yellow" type="submit" style="width:100%;margin-top:16px;min-height:46px">Sign in</button>
+    <p id="loginError" class="login-error" aria-live="polite"></p>
+    <div class="login-accounts">
+      <strong style="color:#c5cad3">Default accounts</strong><br>
+      Admin: <code>admin</code> / <code>admin123</code><br>
+      Employee 1: <code>employee1</code> / <code>emp123</code><br>
+      Employee 2: <code>employee2</code> / <code>emp123</code><br>
+      <span class="muted">Admin can add, rename, or delete accounts in Settings.</span>
+    </div>
+  </form>
+</div>
+<script>
+const APP_BRAND_KEY='kpotato_app_brand_v1';
+function getAppBrand(){try{return JSON.parse(localStorage.getItem(APP_BRAND_KEY))||{name:'K-Potato POS',subtitle:'ADMIN PANEL',logo:''}}catch(e){return {name:'K-Potato POS',subtitle:'ADMIN PANEL',logo:''}}}
+function applyAppBrand(){const b=getAppBrand(),name=b.name||'K-Potato POS',subtitle=b.subtitle||'ADMIN PANEL';const sideName=document.getElementById('appBrandName'),headName=document.getElementById('headerBrandName');if(sideName)sideName.textContent=name;if(headName)headName.textContent=name;const sideSub=document.getElementById('appBrandSubtitle'),headSub=document.getElementById('headerBrandSubtitle');if(sideSub)sideSub.textContent=subtitle;if(headSub)headSub.textContent=subtitle;const img=document.getElementById('appLogo'),fallback=document.getElementById('appLogoFallback'),preview=document.getElementById('appLogoPreview'),previewFallback=document.getElementById('appLogoPreviewFallback');if(img){img.src=b.logo||'';img.hidden=!b.logo}if(fallback)fallback.hidden=!!b.logo;if(preview){preview.src=b.logo||'';preview.style.display=b.logo?'block':'none'}if(previewFallback)previewFallback.style.display=b.logo?'none':'inline';const ni=document.getElementById('appNameInput'),si=document.getElementById('appSubtitleInput');if(ni&&document.activeElement!==ni)ni.value=name;if(si&&document.activeElement!==si)si.value=subtitle;document.title=name+' — Compact Admin POS';}
+function readBrandImage(file){return new Promise((resolve,reject)=>{if(!file)return resolve('');if(!file.type.startsWith('image/'))return reject(new Error('Please choose an image file.'));const reader=new FileReader();reader.onerror=reject;reader.onload=()=>{const img=new Image();img.onerror=reject;img.onload=()=>{const max=240,scale=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.width*scale));c.height=Math.max(1,Math.round(img.height*scale));c.getContext('2d').drawImage(img,0,0,c.width,c.height);resolve(c.toDataURL('image/jpeg',.68))};img.src=reader.result};reader.readAsDataURL(file)})}
+async function saveAppBrand(e){e.preventDefault();const name=document.getElementById('appNameInput').value.trim(),subtitle=document.getElementById('appSubtitleInput').value.trim(),file=document.getElementById('appLogoInput').files[0],old=getAppBrand();if(!name)return;try{const logo=file?await readBrandImage(file):old.logo;localStorage.setItem(APP_BRAND_KEY,JSON.stringify({name,subtitle,logo}));applyAppBrand();document.getElementById('appBrandMessage').textContent='App name and picture saved.';document.getElementById('appLogoInput').value=''}catch(err){document.getElementById('appBrandMessage').textContent='Could not save the picture. Try a smaller image or export a data backup first.'}}
+function removeAppLogo(){const b=getAppBrand();b.logo='';try{localStorage.setItem(APP_BRAND_KEY,JSON.stringify(b));applyAppBrand();document.getElementById('appLogoInput').value='';document.getElementById('appBrandMessage').textContent='Default potato icon restored.'}catch(e){alert('Could not update app picture.')}}
+const DASH_PASS_KEY='kpotato_dashboard_password_v1';
+function getDashboardPassword(){return localStorage.getItem(DASH_PASS_KEY)||'1234'}
+let dashboardUnlocked=false;
+function unlockDashboard(e){e.preventDefault();const input=document.getElementById('dashLoginPassword');if(input.value!==getDashboardPassword()){document.getElementById('dashLoginError').textContent='Incorrect password. Try again.';input.value='';input.focus();return}dashboardUnlocked=true;document.getElementById('dashboardLock').classList.add('hidden');document.getElementById('dashLoginError').textContent='';input.value='';renderAll()}
+function closeDashboardLock(){document.getElementById('dashboardLock').classList.add('hidden');document.getElementById('dashLoginPassword').value='';document.getElementById('dashLoginError').textContent='';dashboardUnlocked=false;document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='pos'));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page==='pos'));renderAll()}
+function changeDashboardPassword(e){e.preventDefault();const current=document.getElementById('currentDashPassword').value,next=document.getElementById('newDashPassword').value,confirmNext=document.getElementById('confirmDashPassword').value,msg=document.getElementById('dashPasswordMessage');if(current!==getDashboardPassword()){msg.textContent='Current password is incorrect.';return}if(next.length<4){msg.textContent='Use at least 4 characters.';return}if(next!==confirmNext){msg.textContent='New passwords do not match.';return}localStorage.setItem(DASH_PASS_KEY,next);document.getElementById('dashPasswordForm').reset();msg.textContent='Dashboard password changed successfully.'}
+
+/* ========== Multi-user accounts (add / rename / delete / password) ========== */
+const ACCOUNTS_KEY='kpotato_accounts_v1';
+const SESSION_KEY='kpotato_session_v1';
+const EMPLOYEE_PAGES=new Set(['pos','history']);
+const ADMIN_PAGES=new Set(['pos','dashboard','products','inventory','recipes','history','stock','backup']);
+const defaultAccounts=[
+  {id:'admin',username:'admin',password:'admin123',role:'admin',displayName:'Administrator'},
+  {id:'emp1',username:'employee1',password:'emp123',role:'employee',displayName:'Employee 1'},
+  {id:'emp2',username:'employee2',password:'emp123',role:'employee',displayName:'Employee 2'}
+];
+function normalizeUsername(s){return String(s||'').trim().toLowerCase().replace(/\s+/g,'_')}
+function isValidUsername(s){return /^[a-z0-9_]{3,30}$/.test(s)}
+function getAccounts(){
+  try{
+    const raw=JSON.parse(localStorage.getItem(ACCOUNTS_KEY));
+    if(Array.isArray(raw)&&raw.length>=1&&raw.every(a=>a&&a.id&&a.username&&a.password&&a.role))return raw;
+  }catch(e){}
+  localStorage.setItem(ACCOUNTS_KEY,JSON.stringify(defaultAccounts));
+  return JSON.parse(JSON.stringify(defaultAccounts));
+}
+function saveAccounts(list){localStorage.setItem(ACCOUNTS_KEY,JSON.stringify(list))}
+function getSession(){
+  try{return JSON.parse(sessionStorage.getItem(SESSION_KEY))||null}catch(e){return null}
+}
+function setSession(user){sessionStorage.setItem(SESSION_KEY,JSON.stringify({id:user.id,username:user.username,role:user.role,displayName:user.displayName}))}
+function clearSession(){sessionStorage.removeItem(SESSION_KEY)}
+function currentUser(){return getSession()}
+function isAdmin(){const u=currentUser();return !!(u&&u.role==='admin')}
+function canAccessPage(page){
+  const u=currentUser();
+  if(!u)return false;
+  if(u.role==='admin')return ADMIN_PAGES.has(page);
+  return EMPLOYEE_PAGES.has(page);
+}
+function applyRoleUI(){
+  const u=currentUser();
+  const loggedIn=!!u;
+  document.getElementById('loginOverlay').classList.toggle('hidden',loggedIn);
+  document.querySelectorAll('.nav-admin-only').forEach(el=>{
+    el.classList.toggle('hidden-by-role',!isAdmin());
+  });
+  const chip=document.getElementById('headerUserChip');
+  const side=document.getElementById('sidebarUserInfo');
+  if(u){
+    const roleLabel=u.role==='admin'?'Admin':'Employee';
+    if(chip){chip.style.display='inline-flex';chip.innerHTML=`<span class="role-badge">${esc(roleLabel)}</span><span>${esc(u.displayName||u.username)}</span>`}
+    if(side)side.innerHTML=`<strong style="color:#f3f4f6">${esc(u.displayName||u.username)}</strong><div class="muted">${esc(roleLabel)} · @${esc(u.username)}</div>`;
+  }else{
+    if(chip){chip.style.display='none';chip.innerHTML=''}
+    if(side)side.innerHTML='';
+  }
+  renderAccountsPanel();
+}
+function loginUser(e){
+  e.preventDefault();
+  const username=normalizeUsername(document.getElementById('loginUsername').value);
+  const password=document.getElementById('loginPassword').value||'';
+  const err=document.getElementById('loginError');
+  const accounts=getAccounts();
+  const user=accounts.find(a=>normalizeUsername(a.username)===username&&a.password===password);
+  if(!user){err.textContent='Incorrect username or password.';return}
+  setSession(user);
+  err.textContent='';
+  document.getElementById('loginUsername').value='';
+  document.getElementById('loginPassword').value='';
+  applyRoleUI();
+  nav('pos');
+}
+function logoutUser(){
+  clearSession();
+  dashboardUnlocked=false;
+  document.getElementById('dashboardLock').classList.add('hidden');
+  cartItems={};
+  applyRoleUI();
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('loginUsername')?.focus();
+}
+function renderAccountsPanel(){
+  const el=document.getElementById('accountsList');
+  if(!el)return;
+  if(!isAdmin()){el.innerHTML='<div class="notice">Only an admin can manage accounts.</div>';return}
+  const accounts=getAccounts();
+  const me=currentUser();
+  const adminCount=accounts.filter(a=>a.role==='admin').length;
+  el.innerHTML=accounts.map(a=>{
+    const isSelf=me&&me.id===a.id;
+    const lastAdmin=a.role==='admin'&&adminCount<=1;
+    return `<div class="account-card" data-id="${esc(a.id)}">
+      <div class="account-card-head">
+        <div><strong>${esc(a.displayName)}</strong> <span class="pill">${esc(a.role)}</span>${isSelf?' <span class="pill">You</span>':''}
+        <div class="muted">@${esc(a.username)}</div></div>
+      </div>
+      <div class="formgrid">
+        <div><label>Display name</label><input class="acct-display" value="${esc(a.displayName)}" maxlength="40"></div>
+        <div><label>Username</label><input class="acct-username" value="${esc(a.username)}" maxlength="30" pattern="[A-Za-z0-9_]{3,30}"></div>
+        <div><label>Role</label><select class="acct-role"${lastAdmin?' disabled title="Cannot demote the last admin"':''}><option value="admin"${a.role==='admin'?' selected':''}>Admin</option><option value="employee"${a.role==='employee'?' selected':''}>Employee</option></select></div>
+        <div><label>New password</label><input type="password" class="acct-new-pass" minlength="4" placeholder="Leave blank to keep" autocomplete="new-password"></div>
+      </div>
+      <div class="account-actions">
+        <button type="button" class="yellow" onclick="adminSaveAccount('${a.id}',this)">Save changes</button>
+        <button type="button" class="danger" onclick="adminDeleteAccount('${a.id}')"${isSelf||lastAdmin?' disabled':''} title="${isSelf?'Cannot delete the account you are using':lastAdmin?'Cannot delete the last admin':'Delete account'}">Delete</button>
+      </div>
+    </div>`;
+  }).join('')||'<div class="empty">No accounts yet.</div>';
+}
+function adminSaveAccount(accountId,btn){
+  if(!isAdmin())return alert('Only admin can manage accounts.');
+  const card=btn.closest('.account-card');
+  const msg=document.getElementById('accountsMessage');
+  const displayName=(card.querySelector('.acct-display').value||'').trim();
+  const username=normalizeUsername(card.querySelector('.acct-username').value);
+  const role=card.querySelector('.acct-role').value;
+  const nextPass=(card.querySelector('.acct-new-pass').value||'').trim();
+  if(!displayName){msg.textContent='Display name is required.';return}
+  if(!isValidUsername(username)){msg.textContent='Username must be 3–30 characters: letters, numbers, or underscore.';return}
+  if(role!=='admin'&&role!=='employee'){msg.textContent='Invalid role.';return}
+  if(nextPass&&nextPass.length<4){msg.textContent='Password must be at least 4 characters (or leave blank).';return}
+  const accounts=getAccounts();
+  const idx=accounts.findIndex(a=>a.id===accountId);
+  if(idx<0){msg.textContent='Account not found.';return}
+  if(accounts.some((a,i)=>i!==idx&&normalizeUsername(a.username)===username)){msg.textContent='That username is already taken.';return}
+  const adminCount=accounts.filter(a=>a.role==='admin').length;
+  if(accounts[idx].role==='admin'&&role!=='admin'&&adminCount<=1){msg.textContent='Cannot demote the last admin account.';return}
+  accounts[idx].displayName=displayName;
+  accounts[idx].username=username;
+  accounts[idx].role=role;
+  if(nextPass)accounts[idx].password=nextPass;
+  saveAccounts(accounts);
+  const me=currentUser();
+  if(me&&me.id===accountId){setSession(accounts[idx]);applyRoleUI()}
+  else renderAccountsPanel();
+  msg.textContent=`Saved ${displayName} (@${username}).`;
+  card.querySelector('.acct-new-pass').value='';
+}
+function adminChangeAccountPassword(accountId,btn){adminSaveAccount(accountId,btn)}
+function adminDeleteAccount(accountId){
+  if(!isAdmin())return alert('Only admin can manage accounts.');
+  const msg=document.getElementById('accountsMessage');
+  const accounts=getAccounts();
+  const target=accounts.find(a=>a.id===accountId);
+  if(!target){msg.textContent='Account not found.';return}
+  const me=currentUser();
+  if(me&&me.id===accountId){msg.textContent='You cannot delete the account you are currently using.';return}
+  if(target.role==='admin'&&accounts.filter(a=>a.role==='admin').length<=1){msg.textContent='Cannot delete the last admin account.';return}
+  if(!confirm(`Delete account "${target.displayName}" (@${target.username})? This cannot be undone.`))return;
+  saveAccounts(accounts.filter(a=>a.id!==accountId));
+  renderAccountsPanel();
+  msg.textContent=`Deleted ${target.displayName}.`;
+}
+function adminAddAccount(e){
+  e.preventDefault();
+  if(!isAdmin())return alert('Only admin can manage accounts.');
+  const msg=document.getElementById('accountsMessage');
+  const displayName=(document.getElementById('newAcctDisplay').value||'').trim();
+  const username=normalizeUsername(document.getElementById('newAcctUsername').value);
+  const password=(document.getElementById('newAcctPassword').value||'').trim();
+  const role=document.getElementById('newAcctRole').value;
+  if(!displayName){msg.textContent='Display name is required.';return}
+  if(!isValidUsername(username)){msg.textContent='Username must be 3–30 characters: letters, numbers, or underscore.';return}
+  if(password.length<4){msg.textContent='Password must be at least 4 characters.';return}
+  if(role!=='admin'&&role!=='employee'){msg.textContent='Invalid role.';return}
+  const accounts=getAccounts();
+  if(accounts.some(a=>normalizeUsername(a.username)===username)){msg.textContent='That username is already taken.';return}
+  accounts.push({id:'acc_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8),username,password,role,displayName});
+  saveAccounts(accounts);
+  document.getElementById('addAccountForm').reset();
+  renderAccountsPanel();
+  msg.textContent=`Added ${displayName} (@${username}) as ${role}.`;
+}
+const KEY='croffle_corner_pos_kpotato_menu_v1';
+const defaultProducts=[
+ ['Solo Fries','Fries',39],['Duo Fries','Fries',72],['Trio Fries','Fries',108],['Barkada Fries','Fries',183],
+ ['Fries Overload','Fries',125],['Mojos Fries','Fries',70],['Nachos Overload','Sides',125],
+ ['Classic Corndog','Corndog',49],['Cheesy Classic Corndog','Corndog',65],['Mozza Dog','Corndog',79],['Full Mozza Corndog','Corndog',99],
+ ['Burger with Fries','Burger',99],['Burger with Cheese Ball','Burger',115],['Burger with Cheese Stick','Burger',115],
+ ['Egg Burger','Burger',89],['Cheese Burger','Burger',99],
+ ['Cheese Ball (8 pcs)','Sides',75],['Cheese Stick (8 pcs)','Sides',75],
+ ['Blue Lemonade & Fries Combo','Combo',59],['Sunny Lemon & Fries Combo','Combo',59],['Red Iced Tea & Fries Combo','Combo',59],['Pink Lemonade & Fries Combo','Combo',59],['Cucumber Lemon & Fries Combo','Combo',59],
+ ['Chicken Poppers','Chicken',79]
+];
+const defaultIngredients=[
+ ['Frozen fries','Ingredient','g',10000,.18,1000],['Cooking oil consumed','Ingredient','ml',5000,.08,500],['Seasoning','Ingredient','g',1000,.35,100],
+ ['Fries cup','Packaging','pcs',200,.9,30],['Fork','Packaging','pcs',200,.25,30],['Hotdog','Ingredient','pcs',100,8,15],
+ ['Corndog batter','Ingredient','g',5000,.12,500],['Cheese sauce','Ingredient','g',3000,.22,300],['Corndog stick','Packaging','pcs',200,.15,30],
+ ['Drink base','Drink','ml',5000,.12,500],['Water','Drink','ml',20000,.005,1000],['Ice','Drink','g',10000,.01,1000],
+ ['Drink cup','Packaging','pcs',200,1.5,30],['Cup lid','Packaging','pcs',200,.45,30],['Straw','Packaging','pcs',200,.2,30],
+ ['Burger bun','Ingredient','pcs',100,5,15],['Burger patty','Ingredient','pcs',100,12,15],['Cheese slice','Ingredient','pcs',100,3,15],
+ ['Chicken poppers','Ingredient','g',5000,.3,500],['Potato mojos','Ingredient','g',5000,.2,500],['Nachos chips','Ingredient','g',3000,.25,300],
+ ['Nacho cheese sauce','Ingredient','g',2000,.22,250],['Cheese balls','Ingredient','pcs',100,5,15],['Cheese sticks','Ingredient','pcs',100,5,15],
+ ['Egg','Ingredient','pcs',100,3,15],['Mayonnaise / burger sauce','Ingredient','g',2000,.08,200],['Lemon syrup / drink flavor','Drink','ml',3000,.15,300],
+ ['Cucumber flavor','Drink','ml',1000,.15,100],['Sour cream / BBQ seasoning','Ingredient','g',1000,.35,100],
+ ['Flour','Ingredient','g',3000,.06,300],['Breading','Ingredient','g',3000,.10,300],['Egg wash','Ingredient','ml',1000,.08,100]
+];
+function uid(prefix='id'){return prefix+'_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8)}
+function seed(){
+ let ingredients=defaultIngredients.map((x,i)=>({id:'i'+(i+1),name:x[0],category:x[1],unit:x[2],opening:x[3],cost:x[4],reorder:x[5],createdAt:new Date().toISOString()}));
+ let products=defaultProducts.map((x,i)=>({id:'p'+(i+1),name:x[0],category:x[1],price:x[2],active:true}));
+ let recipes=[];
+ const ingredientId=name=>ingredients.find(i=>i.name===name)?.id;
+ const productId=name=>products.find(p=>p.name===name)?.id;
+ function add(product, lines){for(const [name,qty] of lines){const iid=ingredientId(name),pid=productId(product);if(iid&&pid)recipes.push({id:uid('r'),productId:pid,ingredientId:iid,qty});}}
+ const friesCup=[['Frozen fries',100],['Cooking oil consumed',10],['Seasoning',3],['Fries cup',1],['Fork',1]];
+ add('Solo Fries',friesCup);
+ add('Duo Fries',[['Frozen fries',200],['Cooking oil consumed',20],['Seasoning',6],['Fries cup',1],['Fork',1]]);
+ add('Trio Fries',[['Frozen fries',300],['Cooking oil consumed',30],['Seasoning',9],['Fries cup',1],['Fork',1]]);
+ add('Barkada Fries',[['Frozen fries',500],['Cooking oil consumed',50],['Seasoning',15],['Fries cup',1],['Fork',1]]);
+ add('Fries Overload',[['Frozen fries',300],['Cooking oil consumed',30],['Seasoning',10],['Fries cup',1],['Fork',1],['Cheese sauce',40]]);
+ add('Mojos Fries',[['Potato mojos',200],['Cooking oil consumed',20],['Sour cream / BBQ seasoning',5],['Fries cup',1]]);
+ add('Nachos Overload',[['Nachos chips',250],['Nacho cheese sauce',60],['Fries cup',1]]);
+ for(const [name,batter,cheese] of [['Classic Corndog',60,0],['Cheesy Classic Corndog',60,25],['Mozza Dog',60,15],['Full Mozza Corndog',60,35]]){
+   const lines=[['Hotdog',1],['Corndog batter',batter],['Corndog stick',1]];
+   if(cheese)lines.push(['Cheese slice',cheese===15?0.5:1]);
+   if(name==='Classic Corndog')lines.push(['Cheese sauce',10]);
+   add(name,lines);
+ }
+ const burgerBase=[['Burger bun',1],['Burger patty',1],['Mayonnaise / burger sauce',10]];
+ add('Burger with Fries',[...burgerBase,['Frozen fries',100],['Cooking oil consumed',10],['Seasoning',3],['Fries cup',1]]);
+ add('Burger with Cheese Ball',[...burgerBase,['Cheese balls',2]]);
+ add('Burger with Cheese Stick',[...burgerBase,['Cheese sticks',2]]);
+ add('Egg Burger',[...burgerBase,['Egg',1]]);
+ add('Cheese Burger',[...burgerBase,['Cheese slice',1]]);
+ add('Cheese Ball (8 pcs)',[['Cheese balls',8]]);
+ add('Cheese Stick (8 pcs)',[['Cheese sticks',8]]);
+ const combo=[['Frozen fries',100],['Cooking oil consumed',10],['Seasoning',3],['Fries cup',1],['Drink base',80],['Lemon syrup / drink flavor',20],['Water',150],['Ice',100],['Drink cup',1],['Cup lid',1],['Straw',1]];
+ for(const name of ['Blue Lemonade & Fries Combo','Sunny Lemon & Fries Combo','Red Iced Tea & Fries Combo','Pink Lemonade & Fries Combo']) add(name,combo);
+ add('Cucumber Lemon & Fries Combo',[...combo,['Cucumber flavor',10]]);
+ add('Chicken Poppers',[['Chicken poppers',150],['Cooking oil consumed',15],['Sour cream / BBQ seasoning',5],['Fries cup',1]]);
+ return {ingredients,products,recipes,sales:[],movements:[],processed:[],version:2};
+}
+let db;try{db=JSON.parse(localStorage.getItem(KEY))}catch(e){}if(!db||!db.ingredients||!db.products)db=seed();
+// Safe migration: ensure flour, breading, and egg wash exist in older saved browser data.
+for(const x of defaultIngredients.filter(x=>['Flour','Breading','Egg wash'].includes(x[0]))){if(!db.ingredients.some(i=>i.name.toLowerCase()===x[0].toLowerCase()))db.ingredients.push({id:uid('ing'),name:x[0],category:x[1],unit:x[2],opening:x[3],cost:x[4],reorder:x[5],createdAt:new Date().toISOString()});}
+function save(){localStorage.setItem(KEY,JSON.stringify(db))}
+function money(n){return '₱'+(Number(n)||0).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function num(n){return Number(n)||0}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function ing(id){return db.ingredients.find(x=>x.id===id)}
+function prod(id){return db.products.find(x=>x.id===id)}
+function stock(id){let opening=num(ing(id)?.opening);return opening+db.movements.filter(m=>m.ingredientId===id).reduce((a,m)=>a+num(m.inQty)-num(m.outQty),0)}
+function costOfProduct(pid){return db.recipes.filter(r=>r.productId===pid).reduce((sum,r)=>sum+num(r.qty)*num(ing(r.ingredientId)?.cost),0)}
+function stockValue(){return db.ingredients.reduce((s,i)=>s+Math.max(0,stock(i.id))*num(i.cost),0)}
+function nav(page){
+  if(!currentUser()){applyRoleUI();return}
+  if(!canAccessPage(page)){alert('You do not have access to this section. Ask an admin for help.');return}
+  if(page==='dashboard'){dashboardUnlocked=false;document.getElementById('dashboardLock').classList.remove('hidden');document.getElementById('dashLoginPassword').value='';document.getElementById('dashLoginError').textContent='';}
+  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===page));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
+  renderAll();
+}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>nav(b.dataset.page));
+let cartItems={};
+function productVisual(p){const n=p.name.toLowerCase(),c=(p.category||'').toLowerCase();let emoji='🍟',url='https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=600&q=80';if(n.includes('burger')){emoji='🍔';url='https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80'}else if(n.includes('lemonade')||n.includes('tea')||n.includes('cucumber')){emoji='🥤';url='https://images.unsplash.com/photo-1513558161293-cdaf765edfd7?auto=format&fit=crop&w=600&q=80'}else if(n.includes('corndog')||n.includes('corn dog')||n.includes('mozza dog')){emoji='🌭';url='https://images.unsplash.com/photo-1612392062631-94dd858cba88?auto=format&fit=crop&w=600&q=80'}else if(n.includes('nacho')){emoji='🧀';url='https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?auto=format&fit=crop&w=600&q=80'}else if(n.includes('chicken')){emoji='🍗';url='https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=600&q=80'}else if(n.includes('cheese ball')||n.includes('cheese stick')){emoji='🧀';url='https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?auto=format&fit=crop&w=600&q=80'}return {emoji,url}}
+function renderProductsPOS(){let search=(document.getElementById('productSearch')?.value||'').toLowerCase(),cat=document.getElementById('categoryFilter')?.value||'';let list=db.products.filter(p=>p.active&&p.name.toLowerCase().includes(search)&&(!cat||p.category===cat));document.getElementById('posProducts').innerHTML=list.map(p=>{let v=productVisual(p),src=p.image||v.url;return `<button class="product" onclick="addCart('${p.id}')"><span class="product-photo"><img src="${src}" alt="${esc(p.name)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><span class="photo-fallback" style="display:${p.image?'none':'flex'}">${v.emoji}</span></span><span class="product-copy"><strong>${esc(p.name)}</strong><span class="price">${money(p.price)}</span><small>${esc(p.category)}</small></span></button>`}).join('')||'<div class="empty">No menu items found.</div>'}
+function addCart(id){cartItems[id]=(cartItems[id]||0)+1;renderCart()}
+function changeCart(id,delta){cartItems[id]=(cartItems[id]||0)+delta;if(cartItems[id]<=0)delete cartItems[id];renderCart()}
+function cartSubtotal(){return Object.entries(cartItems).reduce((s,[id,q])=>s+num(prod(id)?.price)*q,0)}
+function renderCart(){let el=document.getElementById('cart');if(!el)return;let entries=Object.entries(cartItems);el.innerHTML=entries.length?`<table><thead><tr><th>Item</th><th>Qty</th><th class="right">Total</th></tr></thead><tbody>${entries.map(([id,q])=>`<tr><td>${esc(prod(id)?.name)}</td><td><button class="qtybtn soft" onclick="changeCart('${id}',-1)">−</button> ${q} <button class="qtybtn soft" onclick="changeCart('${id}',1)">+</button></td><td class="right">${money(num(prod(id)?.price)*q)}</td></tr>`).join('')}</tbody></table>`:'<div class="empty">Tap a menu item to add it to the order.</div>';let subtotal=cartSubtotal(),discount=Math.min(subtotal,Math.max(0,num(document.getElementById('discount')?.value))),total=subtotal-discount,paid=num(document.getElementById('paid')?.value);document.getElementById('cartTotal').innerHTML=`<div class="row"><span>Subtotal</span><strong class="right">${money(subtotal)}</strong></div><div class="row"><span>Discount</span><strong class="right">−${money(discount)}</strong></div><hr><div class="row"><strong>Total</strong><strong class="right">${money(total)}</strong></div><div class="row"><span>Change</span><strong class="right">${money(Math.max(0,paid-total))}</strong></div>`}
+function checkout(){
+ let entries=Object.entries(cartItems);if(!entries.length)return alert('Add at least one product.');
+ let subtotal=cartSubtotal(),discount=Math.min(subtotal,Math.max(0,num(document.getElementById('discount').value))),total=subtotal-discount,paid=num(document.getElementById('paid').value);
+ if(paid<total)return alert('Amount paid must be equal to or greater than the total.');
+ let requirements={};for(let [pid,q] of entries){let lines=db.recipes.filter(r=>r.productId===pid);if(!lines.length)return alert(`No recipe set for ${prod(pid)?.name}. Add its recipe before selling.`);for(let r of lines)requirements[r.ingredientId]=(requirements[r.ingredientId]||0)+num(r.qty)*q}
+ let shortages=Object.entries(requirements).filter(([id,q])=>stock(id)<q);
+ if(shortages.length){let msg=shortages.map(([id,q])=>`${ing(id)?.name}: need ${q}${ing(id)?.unit}, have ${stock(id)}${ing(id)?.unit}`).join('\n');if(!confirm('Insufficient stock:\n'+msg+'\n\nComplete sale anyway and allow negative stock?'))return}
+ let txid=uid('sale');if(db.processed.includes(txid))return alert('Duplicate transaction blocked.');
+ let sale={id:txid,receipt:'KP-'+Date.now().toString().slice(-8),date:new Date().toISOString(),status:'completed',payment:document.getElementById('payment').value,subtotal,discount,total,paid,change:paid-total,items:entries.map(([id,q])=>({productId:id,name:prod(id).name,qty:q,price:num(prod(id).price),cost:costOfProduct(id)}))};
+ let movements=Object.entries(requirements).map(([id,q])=>({id:uid('mov'),date:sale.date,ingredientId:id,inQty:0,outQty:q,type:'sale',referenceId:txid,reason:`Sale ${sale.receipt}`,unitCost:num(ing(id)?.cost)}));
+ // Save sale, movements and processed key together in one local state update.
+ db.sales.unshift(sale);db.movements.push(...movements);db.processed.push(txid);save();cartItems={};document.getElementById('discount').value=0;document.getElementById('paid').value='';renderAll();alert(`Sale completed!\nReceipt: ${sale.receipt}\nTotal: ${money(total)}\nChange: ${money(sale.change)}\nInventory deducted.`);
+}
+function addIngredient(e){e.preventDefault();let name=document.getElementById('ingName').value.trim();if(db.ingredients.some(i=>i.name.toLowerCase()===name.toLowerCase()))return alert('Ingredient name already exists.');let x={id:uid('ing'),name,category:document.getElementById('ingCategory').value,unit:document.getElementById('ingUnit').value,opening:num(document.getElementById('ingStock').value),cost:num(document.getElementById('ingCost').value),reorder:num(document.getElementById('ingReorder').value)};db.ingredients.push(x);save();e.target.reset();renderAll()}
+function addBulkIngredientRow(){let host=document.getElementById('bulkIngredientRows');let row=document.createElement('div');row.className='formgrid bulk-ing-row';row.style.cssText='border:1px solid var(--line);padding:10px;border-radius:10px;margin:8px 0';row.innerHTML=`<div><label>Name</label><input class="bi-name" placeholder="e.g. Cheese powder"></div><div><label>Category</label><select class="bi-category"><option>Ingredient</option><option>Packaging</option><option>Drink</option><option>Other</option></select></div><div><label>Base unit</label><select class="bi-unit"><option>g</option><option>ml</option><option>pcs</option></select></div><div><label>Opening stock</label><input class="bi-stock" type="number" min="0" step="any" value="0"></div><div><label>Cost per base unit (₱)</label><input class="bi-cost" type="number" min="0" step="any" value="0"></div><div><label>Reorder level</label><input class="bi-reorder" type="number" min="0" step="any" value="0"></div><div><button class="danger" type="button" onclick="this.closest('.bulk-ing-row').remove()">Remove row</button></div>`;host.appendChild(row)}
+function saveBulkIngredients(){let rows=[...document.querySelectorAll('.bulk-ing-row')];let added=0,skipped=[];for(let row of rows){let name=row.querySelector('.bi-name').value.trim();if(!name)continue;if(db.ingredients.some(i=>i.name.toLowerCase()===name.toLowerCase())){skipped.push(name);continue}db.ingredients.push({id:uid('ing'),name,category:row.querySelector('.bi-category').value,unit:row.querySelector('.bi-unit').value,opening:num(row.querySelector('.bi-stock').value),cost:num(row.querySelector('.bi-cost').value),reorder:num(row.querySelector('.bi-reorder').value)});added++}if(!added&&!skipped.length)return alert('Enter at least one ingredient name.');save();document.getElementById('bulkIngredientRows').innerHTML='';addBulkIngredientRow();renderAll();alert(`Added ${added} ingredient(s).${skipped.length?' Skipped duplicates: '+skipped.join(', '):''}`)}
+function editIngredient(id){let i=ing(id);if(!i)return;let name=prompt('Ingredient name:',i.name);if(name===null)return;name=name.trim();if(!name)return alert('Name cannot be empty.');if(db.ingredients.some(x=>x.id!==id&&x.name.toLowerCase()===name.toLowerCase()))return alert('Another ingredient already uses that name.');let category=prompt('Category (Ingredient, Packaging, Drink, Other):',i.category);if(category===null)return;let cost=prompt('Cost per base unit (₱):',i.cost);if(cost===null)return;let reorder=prompt('Reorder level in '+i.unit+':',i.reorder);if(reorder===null)return;let current=stock(id),newStock=prompt('Current stock in '+i.unit+' (use '+i.unit+' as base unit):',current);if(newStock===null)return;cost=Number(cost);reorder=Number(reorder);newStock=Number(newStock);if(!Number.isFinite(cost)||cost<0||!Number.isFinite(reorder)||reorder<0||!Number.isFinite(newStock))return alert('Please enter valid non-negative numbers for cost and reorder level, and a valid stock quantity.');i.name=name;i.category=category.trim()||i.category;i.cost=cost;i.reorder=reorder;let delta=newStock-current;if(Math.abs(delta)>1e-9)db.movements.push({id:uid('mov'),date:new Date().toISOString(),ingredientId:id,inQty:delta>0?delta:0,outQty:delta<0?-delta:0,type:'adjustment',referenceId:'',reason:'Inventory edited: stock count correction',unitCost:cost});save();renderAll()}
+function deleteIngredient(id){
+ let item=ing(id);if(!item)return;
+ const usedInRecipes=db.recipes.some(r=>r.ingredientId===id);
+ const hasMovements=db.movements.some(m=>m.ingredientId===id);
+ if(usedInRecipes||hasMovements){
+  let reasons=[];
+  if(usedInRecipes)reasons.push('it is used in one or more recipes');
+  if(hasMovements)reasons.push('it has stock movement history');
+  return alert(`Cannot delete "${item.name}" because ${reasons.join(' and ')}. Remove it from recipes and resolve its stock history first to protect inventory records.`);
+ }
+ if(!confirm(`Delete "${item.name}" from inventory? This cannot be undone.`))return;
+ db.ingredients=db.ingredients.filter(i=>i.id!==id);
+ save();renderAll();
+}
+async function addProduct(e){e.preventDefault();let name=document.getElementById('prodName').value.trim();if(db.products.some(p=>p.name.toLowerCase()===name.toLowerCase()))return alert('Product already exists.');let file=document.getElementById('prodImage').files[0],image='';try{if(file)image=await resizeProductImage(file)}catch(err){return alert('Could not read that picture. Please try another image.')}let item={id:uid('prod'),name,category:document.getElementById('prodCategory').value.trim(),price:num(document.getElementById('prodPrice').value),active:true};if(image)item.image=image;db.products.push(item);try{save()}catch(err){db.products.pop();return alert('Storage is full. Try a smaller photo or export a backup and remove some large pictures.')}e.target.reset();renderAll()}
+function resizeProductImage(file){return new Promise((resolve,reject)=>{if(!file.type.startsWith('image/'))return reject(new Error('Not an image'));let reader=new FileReader();reader.onerror=reject;reader.onload=()=>{let img=new Image();img.onerror=reject;img.onload=()=>{let max=320,scale=Math.min(1,max/Math.max(img.width,img.height)),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(img.width*scale));canvas.height=Math.max(1,Math.round(img.height*scale));let ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,canvas.width,canvas.height);resolve(canvas.toDataURL('image/jpeg',0.65))};img.src=reader.result};reader.readAsDataURL(file)})}
+async function changeProductImage(id,input){let file=input.files&&input.files[0];if(!file)return;try{let image=await resizeProductImage(file),p=prod(id);if(!p)return;let old=p.image;p.image=image;try{save()}catch(err){p.image=old;alert('Storage is full. Please use a smaller picture or export a backup.');return}renderAll()}catch(err){alert('Could not read that picture. Please choose an image file.')}finally{input.value=''}}
+function removeProductImage(id){let p=prod(id);if(!p)return;delete p.image;save();renderAll()}
+function addRecipeEntryRow(selectedId='',quantity=''){let host=document.getElementById('recipeEntryRows');if(!host)return;let row=document.createElement('div');row.className='formgrid recipe-entry-row';row.style.cssText='border:1px solid var(--line);padding:10px;border-radius:10px;margin:8px 0';row.innerHTML=`<div><label>Ingredient</label><select class="rr-ingredient">${db.ingredients.map(i=>`<option value="${esc(i.id)}" ${i.id===selectedId?'selected':''}>${esc(i.name)} (${esc(i.unit)})</option>`).join('')}</select></div><div><label>Quantity per serving</label><input class="rr-qty" type="number" min="0.001" step="any" value="${quantity}" placeholder="e.g. 15 g flour"></div><div style="align-self:end"><button class="danger" type="button" onclick="this.closest('.recipe-entry-row').remove()">Remove row</button></div>`;host.appendChild(row)}
+function saveRecipeRows(){let pid=document.getElementById('recipeProduct').value,rows=[...document.querySelectorAll('.recipe-entry-row')];if(!pid)return alert('Select a menu item first.');let lines=rows.map(row=>({iid:row.querySelector('.rr-ingredient').value,q:num(row.querySelector('.rr-qty').value)})).filter(x=>x.iid&&x.q>0);if(!lines.length)return alert('Add at least one ingredient and enter a quantity greater than zero.');let seen=new Set();for(let line of lines){if(seen.has(line.iid))return alert('The same ingredient appears more than once. Keep one row per ingredient.');seen.add(line.iid)}for(let line of lines){let existing=db.recipes.find(r=>r.productId===pid&&r.ingredientId===line.iid);if(existing)existing.qty=line.q;else db.recipes.push({id:uid('recipe'),productId:pid,ingredientId:line.iid,qty:line.q})}save();renderAll();document.getElementById('recipeEntryRows').innerHTML='';addRecipeEntryRow();addRecipeEntryRow();addRecipeEntryRow();alert(`Saved ${lines.length} ingredient line(s) for ${prod(pid)?.name||'the menu item'}.`)}
+function saveRecipe(){saveRecipeRows()}
+function deleteRecipe(id){if(!confirm('Remove this recipe line?'))return;db.recipes=db.recipes.filter(r=>r.id!==id);save();renderAll()}
+function stockMovement(e){e.preventDefault();let id=document.getElementById('movementIngredient').value,type=document.getElementById('movementType').value,q=num(document.getElementById('movementQty').value);if(!id||q<=0)return alert('Select ingredient and quantity.');let inQty=['purchase','adjustment_in'].includes(type)?q:0,outQty=['wastage','adjustment_out'].includes(type)?q:0;if(outQty>stock(id))if(!confirm('This movement will make stock negative. Continue?'))return;let cost=num(document.getElementById('movementCost').value);let m={id:uid('mov'),date:new Date().toISOString(),ingredientId:id,inQty,outQty,type,referenceId:'',reason:document.getElementById('movementReason').value.trim(),unitCost:cost||num(ing(id).cost)};db.movements.push(m);if(type==='purchase'&&cost>0)ing(id).cost=cost;save();e.target.reset();renderAll()}
+function removeProduct(id){if(db.sales.some(s=>s.items.some(i=>i.productId===id)))return alert('This item has sales history, so it cannot be deleted. You can leave it inactive in a future version.');if(!confirm('Delete this product and its recipe?'))return;db.products=db.products.filter(p=>p.id!==id);db.recipes=db.recipes.filter(r=>r.productId!==id);save();renderAll()}
+function renderInventory(){let el=document.getElementById('inventoryTable');if(!el)return;let s=(document.getElementById('inventorySearch')?.value||'').toLowerCase(),list=db.ingredients.filter(i=>i.name.toLowerCase().includes(s));el.innerHTML=`<table><thead><tr><th>Ingredient</th><th>Category</th><th>Stock</th><th>Reorder</th><th>Unit cost</th><th>Stock value</th><th>Actions</th></tr></thead><tbody>${list.map(i=>{let st=stock(i.id);return `<tr><td><strong>${esc(i.name)}</strong><div class="muted">${esc(i.unit)}</div></td><td>${esc(i.category)}</td><td class="${st<=i.reorder?'low':''}">${st.toLocaleString()} ${esc(i.unit)} ${st<=i.reorder?'<span class="pill">Low</span>':''}</td><td>${num(i.reorder).toLocaleString()} ${esc(i.unit)}</td><td>${money(i.cost)}</td><td>${money(Math.max(0,st)*num(i.cost))}</td><td><div class="row" style="gap:5px;flex-wrap:nowrap"><button class="soft" onclick="editIngredient('${i.id}')">Edit</button><button class="danger" onclick="deleteIngredient('${i.id}')">Delete</button></div></td></tr>`}).join('')}</tbody></table>`}
+function renderRecipes(){
+ let el=document.getElementById('recipeTable');if(!el)return;
+ const grouped=db.products.map(p=>({product:p,lines:db.recipes.filter(r=>r.productId===p.id)})).filter(g=>g.lines.length);
+ if(!grouped.length){el.innerHTML='<div class="empty">No recipes yet. Select a product above, add multiple ingredient rows, then click “Save all recipe ingredients.”</div>';return;}
+ el.innerHTML=`<table><thead><tr><th>Menu item / recipe</th><th>Ingredient</th><th>Qty per serving</th><th>Line cost</th><th>Actions</th></tr></thead><tbody>${grouped.map(g=>{
+ const total=g.lines.reduce((sum,r)=>sum+num(r.qty)*num(ing(r.ingredientId)?.cost),0);
+ return `<tr style="background:#fff4cd"><td colspan="5"><strong>${esc(g.product.name)}</strong> <span class="pill">${g.lines.length} ingredient${g.lines.length===1?'':'s'}</span> <span class="muted">Total recipe cost: ${money(total)} per serving</span></td></tr>`+
+ g.lines.map(r=>`<tr><td></td><td>${esc(ing(r.ingredientId)?.name||'Deleted ingredient')} <span class="muted">${esc(ing(r.ingredientId)?.unit||'')}</span></td><td>${num(r.qty).toLocaleString()}</td><td>${money(num(r.qty)*num(ing(r.ingredientId)?.cost))}</td><td><button class="danger" onclick="deleteRecipe('${r.id}')">Remove</button></td></tr>`).join('');
+ }).join('')}</tbody></table>`;
+}
+function renderProducts(){let el=document.getElementById('productTable');if(!el)return;el.innerHTML=`<table><thead><tr><th>Picture</th><th>Product</th><th>Category</th><th>Price</th><th>Recipe cost</th><th>Est. gross profit</th><th>Actions</th></tr></thead><tbody>${db.products.map(p=>{let c=costOfProduct(p.id),v=productVisual(p),src=p.image||v.url;return `<tr><td><img src="${src}" alt="${esc(p.name)}" style="width:58px;height:48px;object-fit:cover;border-radius:8px" onerror="this.style.display='none'"></td><td>${esc(p.name)}</td><td>${esc(p.category)}</td><td>${money(p.price)}</td><td>${money(c)}</td><td>${money(num(p.price)-c)}</td><td><input id="photo-${p.id}" type="file" accept="image/*" style="display:none" onchange="changeProductImage('${p.id}',this)"><button type="button" class="soft" onclick="document.getElementById('photo-${p.id}').click()">${p.image?'Change picture':'Add picture'}</button>${p.image?`<button type="button" class="soft" onclick="removeProductImage('${p.id}')">Use default</button>`:''}<button type="button" class="danger" onclick="removeProduct('${p.id}')">Delete</button></td></tr>`}).join('')}</tbody></table>`}
+function clearHistoryFilters(){
+  ['historySearch','historyFrom','historyTo','historyPayment'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  renderHistory();
+}
+function renderHistory(){
+ let el=document.getElementById('historyTable');if(!el)return;
+ const search=(document.getElementById('historySearch')?.value||'').trim().toLowerCase();
+ const from=document.getElementById('historyFrom')?.value||'';
+ const to=document.getElementById('historyTo')?.value||'';
+ const payment=document.getElementById('historyPayment')?.value||'';
+ const filtered=db.sales.filter(s=>{
+   const d=new Date(s.date), day=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+   const haystack=[s.receipt,s.payment,...(s.items||[]).map(i=>i.name)].join(' ').toLowerCase();
+   return (!search||haystack.includes(search))&&(!from||day>=from)&&(!to||day<=to)&&(!payment||s.payment===payment);
+ });
+ const cashTotal=filtered.reduce((sum,s)=>sum+(s.payment==='Cash'?num(s.total):0),0);
+ const gcashTotal=filtered.reduce((sum,s)=>sum+(s.payment==='GCash'?num(s.total):0),0);
+ const allTotal=filtered.reduce((sum,s)=>sum+num(s.total),0);
+ const summary=document.getElementById('historySummary');
+ if(summary)summary.innerHTML=`Showing <strong>${filtered.length}</strong> of ${db.sales.length} sales · Total: <strong>${money(allTotal)}</strong> · Cash: <strong>${money(cashTotal)}</strong> · GCash: <strong>${money(gcashTotal)}</strong>`;
+ el.innerHTML=filtered.length?`<table><thead><tr><th>From / Date</th><th>Receipt</th><th>Item</th><th>Cash</th><th>GCash</th><th>Payment</th><th>Total</th><th>Est. gross profit*</th></tr></thead><tbody>${filtered.map(s=>{
+   const d=new Date(s.date);
+   const itemText=(s.items||[]).map(i=>`${esc(i.name)} × ${i.qty}`).join('<br>');
+   const cash=s.payment==='Cash'?num(s.total):0;
+   const gcash=s.payment==='GCash'?num(s.total):0;
+   return `<tr><td>${d.toLocaleString()}</td><td><strong>${esc(s.receipt)}</strong></td><td>${itemText||'—'}</td><td>${cash?money(cash):'—'}</td><td>${gcash?money(gcash):'—'}</td><td>${esc(s.payment||'—')}</td><td><strong>${money(s.total)}</strong></td><td>${money((s.items||[]).reduce((a,i)=>a+num(i.qty)*(num(i.price)-num(i.cost)),0)-num(s.discount))}</td></tr>`;
+ }).join('')}</tbody><tfoot><tr><th colspan="3">Filtered totals</th><th>${money(cashTotal)}</th><th>${money(gcashTotal)}</th><th></th><th>${money(allTotal)}</th><th></th></tr></tfoot></table><p class="muted">*Estimated gross profit based on saved recipe cost at sale time; excludes rent, utilities, labor, and other operating expenses. Cash and GCash columns show the sale total for transactions paid with that method.</p>`:'<div class="empty">No sales match these filters.</div>';
+}
+function renderMovements(){let el=document.getElementById('movementTable');if(!el)return;let arr=[...db.movements].reverse().slice(0,100);el.innerHTML=arr.length?`<table><thead><tr><th>Date</th><th>Ingredient</th><th>Type</th><th>In</th><th>Out</th><th>Reference / reason</th></tr></thead><tbody>${arr.map(m=>`<tr><td>${new Date(m.date).toLocaleString()}</td><td>${esc(ing(m.ingredientId)?.name||'Unknown')}</td><td>${esc(m.type)}</td><td>${m.inQty||'—'}</td><td>${m.outQty||'—'}</td><td>${esc(m.reason||m.referenceId||'—')}</td></tr>`).join('')}</tbody></table>`:'<div class="empty">No stock movements yet.</div>'}
+function renderDashboard(){
+ const now=new Date(),todayStart=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+ const rangeEl=document.getElementById('dashRange'),range=rangeEl?rangeEl.value:'7';
+ let start=null,end=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1);
+ if(range==='today')start=todayStart;
+ else if(range==='7')start=new Date(now.getFullYear(),now.getMonth(),now.getDate()-6);
+ else if(range==='30')start=new Date(now.getFullYear(),now.getMonth(),now.getDate()-29);
+ else if(range==='month')start=new Date(now.getFullYear(),now.getMonth(),1);
+ else if(range==='year')start=new Date(now.getFullYear(),0,1);
+ const inRange=s=>{const d=new Date(s.date);return !Number.isNaN(d.getTime())&&(!start||d>=start)&&d<end;};
+ const sales=db.sales.filter(inRange),allSales=db.sales;
+ const total=list=>list.reduce((a,s)=>a+num(s.total),0);
+ const estimatedCost=list=>list.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>x+num(i.qty)*num(i.cost),0),0);
+ const profit=list=>total(list)-estimatedCost(list)-list.reduce((a,s)=>a+num(s.discount),0);
+ const orderCount=sales.length,avg=orderCount?total(sales)/orderCount:0;
+ const low=db.ingredients.filter(i=>stock(i.id)<=num(i.reorder));
+ const kpis=[
+ ['Net sales',money(total(sales)),`${orderCount} completed order${orderCount===1?'':'s'}`],
+ ['Est. gross profit',money(profit(sales)),'Sales less saved item costs and discounts'],
+ ['Average order',money(avg),'Average transaction value'],
+ ['Units sold',String(sales.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>x+num(i.qty),0),0)),'Across all menu items'],
+ ['Inventory value',money(stockValue()),'Current stock × unit cost'],
+ ['Low-stock supplies',String(low.length),low.length?'Needs attention':'All above reorder levels']
+ ];
+ document.getElementById('kpis').innerHTML=kpis.map((x,i)=>`<div class="card"><div class="muted">${x[0]}</div><div class="kpi">${x[1]}</div><div class="muted">${x[2]}</div></div>`).join('');
+ // Sales trend: show all dates for short ranges; aggregate to recent 14 days for long ranges.
+ let trendStart=start||new Date(Math.min(...allSales.map(s=>new Date(s.date).getTime()).filter(Number.isFinite),todayStart.getTime()));
+ if(!Number.isFinite(trendStart.getTime()))trendStart=todayStart;
+ let days=Math.max(1,Math.floor((todayStart-trendStart)/86400000)+1);
+ if(days>14){trendStart=new Date(now.getFullYear(),now.getMonth(),now.getDate()-13);days=14;}
+ const trend=[];for(let j=0;j<days;j++){const d=new Date(trendStart.getFullYear(),trendStart.getMonth(),trendStart.getDate()+j);const list=sales.filter(s=>new Date(s.date).toDateString()===d.toDateString());trend.push({d,total:total(list)});}
+ const maxTrend=Math.max(1,...trend.map(t=>t.total));
+ document.getElementById('salesTrend').innerHTML=trend.length?trend.map(t=>`<div class="trend-col" title="${t.d.toLocaleDateString()} · ${money(t.total)}"><div class="trend-value">${money(t.total)}</div><div class="trend-track"><div class="trend-bar" style="height:${Math.max(t.total?3:1,t.total/maxTrend*100)}%"></div></div><div class="trend-label">${t.d.toLocaleDateString(undefined,{month:'short',day:'numeric'})}</div></div>`).join(''):'<div class="dash-empty">No sales to chart yet.</div>';
+ const methods=['Cash','GCash','Card','Other'];const payRows=methods.map(m=>({name:m,total:total(sales.filter(s=>String(s.payment||'Other')===m))})).filter(x=>x.total>0);const payMax=Math.max(1,...payRows.map(x=>x.total));
+ document.getElementById('paymentBreakdown').innerHTML=payRows.length?payRows.map(x=>`<div class="dash-metric-row"><div style="flex:1"><div>${esc(x.name)}</div><div class="dash-meter"><span style="width:${x.total/payMax*100}%"></span></div></div><strong>${money(x.total)}</strong></div>`).join(''):'<div class="dash-empty">No payments recorded in this period.</div>';
+ const itemMap={};sales.forEach(s=>(s.items||[]).forEach(i=>{const n=i.name||'Unknown item';if(!itemMap[n])itemMap[n]={qty:0,revenue:0};itemMap[n].qty+=num(i.qty);itemMap[n].revenue+=num(i.qty)*num(i.price);}));const top=Object.entries(itemMap).map(([name,v])=>({name,...v})).sort((a,b)=>b.qty-a.qty).slice(0,5);const topMax=Math.max(1,...top.map(x=>x.qty));
+ document.getElementById('topItems').innerHTML=top.length?top.map((x,i)=>`<div class="dash-item"><div class="dash-item-top"><div><span class="dash-rank">${i+1}</span><strong>${esc(x.name)}</strong></div><strong>${x.qty} sold</strong></div><div class="dash-meter"><span style="width:${x.qty/topMax*100}%"></span></div><div class="muted" style="margin:4px 0 0 30px">Sales ${money(x.revenue)}</div></div>`).join(''):'<div class="dash-empty">No item sales in this period.</div>';
+ document.getElementById('lowStockCount').textContent=String(low.length);
+ document.getElementById('lowstock').innerHTML=low.length?`<div class="tablewrap"><table><thead><tr><th>Supply</th><th>On hand</th><th>Reorder</th></tr></thead><tbody>${low.slice(0,8).map(i=>`<tr><td>${esc(i.name)}</td><td class="low">${stock(i.id)} ${esc(i.unit)}</td><td>${i.reorder}</td></tr>`).join('')}</tbody></table></div>${low.length>8?`<p class="muted">And ${low.length-8} more low-stock items.</p>`:''}`:'<div class="success notice">All items are above their reorder levels.</div>';
+ const recent=[...sales].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,5);
+ document.getElementById('recent').innerHTML=recent.length?recent.map(s=>`<div class="row" style="border-bottom:1px solid #343943;padding:8px 0"><div><strong>${esc(s.receipt||'Sale')}</strong><div class="muted">${new Date(s.date).toLocaleString()} · ${esc(s.payment||'—')}</div></div><strong class="right">${money(s.total)}</strong></div>`).join(''):'<div class="empty">No sales yet for this period.</div>';
+ const snap=[['Menu items',db.products.length],['Ingredients & supplies',db.ingredients.length],['Inventory value',money(stockValue())],['Low-stock alerts',low.length]];
+ document.getElementById('inventorySnapshot').innerHTML=snap.map(x=>`<div class="inventory-stat"><span class="muted">${x[0]}</span><strong>${x[1]}</strong></div>`).join('');
+}
+function fillSelect(id,items,label){let el=document.getElementById(id);if(!el)return;let old=el.value;el.innerHTML=items.map(x=>`<option value="${x.id}">${esc(label(x))}</option>`).join('');if(items.some(x=>x.id===old))el.value=old}
+function refreshRecipeIngredientSelects(){document.querySelectorAll('.rr-ingredient').forEach(el=>{const selected=el.value;el.innerHTML=db.ingredients.map(i=>`<option value="${esc(i.id)}">${esc(i.name)} (${esc(i.unit)})</option>`).join('');if(db.ingredients.some(i=>i.id===selected))el.value=selected;});}
+function renderAll(){let cats=[...new Set(db.products.map(p=>p.category))],cf=document.getElementById('categoryFilter');if(cf){let old=cf.value;cf.innerHTML='<option value="">All categories</option>'+cats.map(c=>`<option>${esc(c)}</option>`).join('');cf.value=cats.includes(old)?old:''}fillSelect('recipeProduct',db.products,p=>p.name);if(document.getElementById('recipeEntryRows')&&!document.getElementById('recipeEntryRows').children.length){addRecipeEntryRow();addRecipeEntryRow();addRecipeEntryRow();}refreshRecipeIngredientSelects();fillSelect('movementIngredient',db.ingredients,i=>`${i.name} (${i.unit})`);renderProductsPOS();renderCart();renderInventory();renderRecipes();renderProducts();renderHistory();renderMovements();renderDashboard()}
+function exportData(){let backup={...db,appBrand:getAppBrand(),accounts:getAccounts()};let blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='k-potato-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}
+function importData(e){let f=e.target.files[0];if(!f)return;let reader=new FileReader();reader.onload=()=>{try{let d=JSON.parse(reader.result);if(!d.ingredients||!d.products||!d.recipes||!d.sales||!d.movements)throw Error('Invalid backup format');if(!confirm('Import replaces current local data. Continue?'))return;db=d;save();if(d.appBrand){localStorage.setItem(APP_BRAND_KEY,JSON.stringify(d.appBrand));applyAppBrand()}if(Array.isArray(d.accounts)&&d.accounts.length>=1){saveAccounts(d.accounts)}renderAll();renderAccountsPanel();alert('Backup imported.')}catch(err){alert('Could not import backup: '+err.message)}};reader.readAsText(f);e.target.value=''}
+function resetData(){if(!confirm('This permanently clears all K-Potato data saved in this browser. Download a backup first if needed.'))return;localStorage.removeItem(KEY);db=seed();save();cartItems={};renderAll();alert('Demo data restored.')}
+save();
+applyAppBrand();
+// Ensure default accounts exist
+getAccounts();
+document.getElementById('clock').textContent=new Date().toLocaleDateString(undefined,{weekday:'short',year:'numeric',month:'short',day:'numeric'});
+applyRoleUI();
+if(currentUser()){
+  renderAll();
+  // Land on a page the user can access
+  const active=document.querySelector('.page.active');
+  if(!active||!canAccessPage(active.id))nav('pos');
+}else{
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+}
+if(document.getElementById('bulkIngredientRows') && !document.querySelector('.bulk-ing-row')) addBulkIngredientRow();
+</script>
+</body></html>
